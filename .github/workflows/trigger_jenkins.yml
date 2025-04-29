@@ -81,23 +81,23 @@ jobs:
           echo "❌ Timed out waiting for Jenkins to assign build number"
           exit 1
 
-      #- name: Wait for Jenkins build to complete
-        # id: poll_result
-        # run: |
-        #   echo "Polling Jenkins for build result..."
-        #   for i in {1..60}; do
-        #     RESULT=$(curl -s -b "$SSO_COOKIES_FILE" "${{ steps.wait_build.outputs.build_url }}/api/json" | jq -r '.result // empty')
-        #     if [[ -n "$RESULT" ]]; then
-        #       echo "Build result: $RESULT"
-        #       echo "result=$RESULT" >> "$GITHUB_OUTPUT"
-        #       if [[ "$RESULT" == "SUCCESS" ]]; then
-        #         exit 0
-        #       else
-        #         echo "❌ Jenkins build failed with status: $RESULT"
-        #         exit 1
-        #       fi
-        #     fi
-        #     sleep 10
-        #   done
-        #   echo "❌ Timed out waiting for Jenkins build result"
-        #   exit 1
+      - name: Wait for Jenkins build to complete
+        id: poll_result
+        run: |
+          echo "Polling Jenkins for build result..."
+          for i in {1..60}; do
+            RESULT=$(curl -s -L -k -b "$SSO_COOKIES_FILE" "${{ steps.wait_build.outputs.build_url }}/api/json" | jq -r '.result // empty')
+            if [[ -n "$RESULT" ]]; then
+              echo "Build result: $RESULT"
+              echo "result=$RESULT" >> "$GITHUB_OUTPUT"
+              if [[ "$RESULT" == "SUCCESS" ]]; then
+                exit 0
+              else
+                echo "❌ Jenkins build failed with status: $RESULT"
+                exit 1
+              fi
+            fi
+            sleep 10
+          done
+          echo "❌ Timed out waiting for Jenkins build result"
+          exit 1
