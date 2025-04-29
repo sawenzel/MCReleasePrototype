@@ -40,7 +40,7 @@ jobs:
         run: |
            curl -s -i -L -k -b "$SSO_COOKIES_FILE" \
             -X GET \
-            "${JENKINS_URL}?NUMBER=${{ steps.get_param.outputs.param1 }}"
+            "${JENKINS_URL}&NUMBER=${{ steps.get_param.outputs.param1 }}"
     
            echo "cookie file ${SSO_COOKIES_FILE}"
 
