@@ -61,8 +61,13 @@ jobs:
         id: wait_build
         run: |
           curl -s -L -i -k -b "$SSO_COOKIES_FILE" ${{ steps.trigger.outputs.queue_url }}/api/json
+          FULL_QUEUE_URL="${{ steps.trigger.outputs.queue_url }}/api/json"
           for i in {1..30}; do
-            BUILD_URL=$(curl -s -L -i -k -b "$SSO_COOKIES_FILE" "${{ steps.trigger.outputs.queue_url }}/api/json" | jq -r '.executable.url // empty')
+            # Step 1: Fetch raw response
+            RAW_RESPONSE=$(curl -s -L -i -k -b "$SSO_COOKIES_FILE" "$FULL_QUEUE_URL")
+            
+            echo "${RAW_RESPONSE}"
+            BUILD_URL=$(echo "$RAW_RESPONSE" | jq -r '.executable.url // empty')
             if [[ -n "$BUILD_URL" ]]; then
               echo "Found build URL: $BUILD_URL"
               echo "build_url=$BUILD_URL" >> "$GITHUB_OUTPUT"
