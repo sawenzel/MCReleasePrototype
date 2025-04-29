@@ -60,11 +60,13 @@ jobs:
       - name: Wait for Jenkins to assign a build number
         id: wait_build
         run: |
-          curl -s -L -i -k -b "$SSO_COOKIES_FILE" ${{ steps.trigger.outputs.queue_url }}/api/json
+          # curl -s -L -i -k -b "$SSO_COOKIES_FILE" ${{ steps.trigger.outputs.queue_url }}/api/json
           FULL_QUEUE_URL="${{ steps.trigger.outputs.queue_url }}/api/json"
           for i in {1..30}; do
+            echo "Step ${i}"
+            echo "curl -s -L -k -b $SSO_COOKIES_FILE $FULL_QUEUE_URL"
             # Step 1: Fetch raw response
-            RAW_RESPONSE=$(curl -s -L -i -k -b "$SSO_COOKIES_FILE" "$FULL_QUEUE_URL")
+            RAW_RESPONSE=$(curl -s -L -k -b "$SSO_COOKIES_FILE" "$FULL_QUEUE_URL")
             
             echo "${RAW_RESPONSE}"
             BUILD_URL=$(echo "$RAW_RESPONSE" | jq -r '.executable.url // empty')
