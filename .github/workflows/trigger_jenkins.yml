@@ -20,6 +20,7 @@ jobs:
             exit 1
           fi
           echo "file=$file" >> "$GITHUB_OUTPUT"
+          echo "file=$file"
 
       - name: Extract PARAM1 value
         id: get_param
@@ -30,7 +31,8 @@ jobs:
             exit 1
           fi
           echo "param1=$param1" >> "$GITHUB_OUTPUT"
-
+          echo "param1=$param1"
+          
       - name: Trigger Jenkins Job
         id: trigger
         env: 
@@ -42,6 +44,7 @@ jobs:
             | grep -i '^Location:' | awk '{print $2}' | tr -d '\r\n')
 
           echo "queue_url=$QUEUE_URL" >> "$GITHUB_OUTPUT"
+          echo "cookie file ${SSO_COOKIES_FILE}"
 
       - name: Wait for Jenkins to assign a build number
         id: wait_build
