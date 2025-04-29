@@ -60,9 +60,9 @@ jobs:
       - name: Wait for Jenkins to assign a build number
         id: wait_build
         run: |
-          echo "Polling Jenkins queue for build number... on ${{ steps.trigger.outputs.queue_url }}/api/json"
+          curl -s -L -i -k -b "$SSO_COOKIES_FILE" ${{ steps.trigger.outputs.queue_url }}/api/json
           for i in {1..30}; do
-            BUILD_URL=$(curl -s -b "$SSO_COOKIES_FILE" "${{ steps.trigger.outputs.queue_url }}/api/json" | jq -r '.executable.url // empty')
+            BUILD_URL=$(curl -s -L -i -k -b "$SSO_COOKIES_FILE" "${{ steps.trigger.outputs.queue_url }}/api/json" | jq -r '.executable.url // empty')
             if [[ -n "$BUILD_URL" ]]; then
               echo "Found build URL: $BUILD_URL"
               echo "build_url=$BUILD_URL" >> "$GITHUB_OUTPUT"
