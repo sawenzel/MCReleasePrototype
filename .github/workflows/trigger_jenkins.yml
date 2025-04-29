@@ -34,7 +34,7 @@ jobs:
       - name: Trigger Jenkins Job
         id: trigger
         env: 
-            JENKINS_URL="https://alijenkins.cern.ch/job/Sandro_Playground/buildWithParameters?token=mysecrettoken123"
+            JENKINS_URL : "https://alijenkins.cern.ch/job/Sandro_Playground/buildWithParameters?token=mysecrettoken123"
         run: |
           QUEUE_URL=$(curl -s -i -L -k -b "$SSO_COOKIES_FILE" \
             -X GET \
