@@ -54,12 +54,13 @@ jobs:
               echo "❌ Failed: Unexpected queue URL: $QUEUE_URL"
               exit 1
            fi
-           echo "QUEUE_URL = ${QUEUE_URL}"
+           echo "QUEUE_URL=${QUEUE_URL}"
+           echo "QUEUE_URL=${QUEUE_URL}" >> "$GITHUB_OUTPUT"
 
       - name: Wait for Jenkins to assign a build number
         id: wait_build
         run: |
-          echo "Polling Jenkins queue for build number..."
+          echo "Polling Jenkins queue for build number... on ${{ steps.trigger.outputs.queue_url }}/api/json"
           for i in {1..30}; do
             BUILD_URL=$(curl -s -b "$SSO_COOKIES_FILE" "${{ steps.trigger.outputs.queue_url }}/api/json" | jq -r '.executable.url // empty')
             if [[ -n "$BUILD_URL" ]]; then
