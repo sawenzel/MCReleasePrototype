@@ -38,15 +38,15 @@ jobs:
         env: 
             JENKINS_URL : "https://alijenkins.cern.ch/job/Sandro_Playground/buildWithParameters?token=mysecrettoken123"
         run: |
-           QUEUE_URL=$(curl -s -i -L -k -b "$SSO_COOKIES_FILE" -X GET \
-           "${JENKINS_URL}&NUMBER=${{ steps.get_param.outputs.param1 }}" \
-           | grep -i '^Location:' | awk '{print $2}' | tr -d '\r\n')
+           RAW_RESPONSE=$(curl -s -i -L -k -b "$SSO_COOKIES_FILE" \
+           -X GET \
+           "${JENKINS_URL}&NUMBER=${{ steps.get_param.outputs.param1 }}")
 
-           echo "queue_url=$QUEUE_URL" >> "$GITHUB_OUTPUT"
-           echo "queue_url=$QUEUE_URL"
+           # Extract all Location headers and look for the last one that looks like a Jenkins queue URL
+           QUEUE_URL=$(echo "$RAW_RESPONSE" | grep -i '^Location:' | awk '{print $2}' | grep '/queue/item/' | tail -n 1 | tr -d '\r\n')
 
            if [[ -z "$QUEUE_URL" ]]; then
-              echo "❌ Failed: No queue URL returned from Jenkins"
+              echo "❌ Failed: Could not extract valid Jenkins queue URL"
               exit 1
            fi
 
@@ -54,6 +54,7 @@ jobs:
               echo "❌ Failed: Unexpected queue URL: $QUEUE_URL"
               exit 1
            fi
+           echo "QUEUE_URL = ${QUEUE_URL}"
 
       - name: Wait for Jenkins to assign a build number
         id: wait_build
