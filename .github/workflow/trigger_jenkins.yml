@@ -1,0 +1,81 @@
+name: Trigger and Monitor Jenkins Build
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  trigger-and-monitor:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+
+      - name: Find release JSON file
+        id: find_json
+        run: |
+          file=$(ls new_release_*.json | head -n 1)
+          if [[ ! -f "$file" ]]; then
+            echo "❌ No release file found"
+            exit 1
+          fi
+          echo "file=$file" >> "$GITHUB_OUTPUT"
+
+      - name: Extract PARAM1 value
+        id: get_param
+        run: |
+          param1=$(jq -r '.PARAM1' "${{ steps.find_json.outputs.file }}")
+          if [[ "$param1" == "null" || -z "$param1" ]]; then
+            echo "❌ PARAM1 not found in JSON"
+            exit 1
+          fi
+          echo "param1=$param1" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger Jenkins Job
+        id: trigger
+        env: 
+            JENKINS_URL="https://alijenkins.cern.ch/job/Sandro_Playground/buildWithParameters?token=mysecrettoken123"
+        run: |
+          QUEUE_URL=$(curl -s -i -L -k -b "$SSO_COOKIES_FILE" \
+            -X GET \
+            "${JENKINS_URL}?NUMBER=${{ steps.get_param.outputs.param1 }}" \
+            | grep -i '^Location:' | awk '{print $2}' | tr -d '\r\n')
+
+          echo "queue_url=$QUEUE_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for Jenkins to assign a build number
+        id: wait_build
+        run: |
+          echo "Polling Jenkins queue for build number..."
+          for i in {1..30}; do
+            BUILD_URL=$(curl -s -b "$SSO_COOKIES_FILE" "${{ steps.trigger.outputs.queue_url }}/api/json" | jq -r '.executable.url // empty')
+            if [[ -n "$BUILD_URL" ]]; then
+              echo "Found build URL: $BUILD_URL"
+              echo "build_url=$BUILD_URL" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "❌ Timed out waiting for Jenkins to assign build number"
+          exit 1
+
+      #- name: Wait for Jenkins build to complete
+        # id: poll_result
+        # run: |
+        #   echo "Polling Jenkins for build result..."
+        #   for i in {1..60}; do
+        #     RESULT=$(curl -s -b "$SSO_COOKIES_FILE" "${{ steps.wait_build.outputs.build_url }}/api/json" | jq -r '.result // empty')
+        #     if [[ -n "$RESULT" ]]; then
+        #       echo "Build result: $RESULT"
+        #       echo "result=$RESULT" >> "$GITHUB_OUTPUT"
+        #       if [[ "$RESULT" == "SUCCESS" ]]; then
+        #         exit 0
+        #       else
+        #         echo "❌ Jenkins build failed with status: $RESULT"
+        #         exit 1
+        #       fi
+        #     fi
+        #     sleep 10
+        #   done
+        #   echo "❌ Timed out waiting for Jenkins build result"
+        #   exit 1
