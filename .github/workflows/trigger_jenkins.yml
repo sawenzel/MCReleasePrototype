@@ -38,13 +38,11 @@ jobs:
         env: 
             JENKINS_URL : "https://alijenkins.cern.ch/job/Sandro_Playground/buildWithParameters?token=mysecrettoken123"
         run: |
-          QUEUE_URL=$(curl -s -i -L -k -b "$SSO_COOKIES_FILE" \
+           curl -s -i -L -k -b "$SSO_COOKIES_FILE" \
             -X GET \
-            "${JENKINS_URL}?NUMBER=${{ steps.get_param.outputs.param1 }}" \
-            | grep -i '^Location:' | awk '{print $2}' | tr -d '\r\n')
-
-          echo "queue_url=$QUEUE_URL" >> "$GITHUB_OUTPUT"
-          echo "cookie file ${SSO_COOKIES_FILE}"
+            "${JENKINS_URL}?NUMBER=${{ steps.get_param.outputs.param1 }}"
+    
+           echo "cookie file ${SSO_COOKIES_FILE}"
 
       - name: Wait for Jenkins to assign a build number
         id: wait_build
