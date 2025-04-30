@@ -1,0 +1,46 @@
+name: Perform GRID job
+
+on:
+  pull_request:
+    paths:
+      - 'jobs/**'
+
+jobs:
+  alien-job-pipeline:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth 0 
+
+      - name: Find added files in jobs
+        id: check
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          NEW_FILES=$(git diff --name-status "$BASE_SHA" "$HEAD_SHA" | grep '^A' | awk '{print $2}' | grep '^jobs/' | grep '*.sh' || true)
+          echo "new_files=$NEW_FILES" >> $GITHUB_OUTPUT
+          echi "new_files=$NEW_FILES"
+
+      - name: Find job file
+        id: find_job
+        run: |
+          exit 0
+
+      - name: Determine job CVMFS package and check if package available
+        id: cvmfs_package_check
+        run: |
+           # Checks if the package referenced in the job file exists
+           exit 0
+           
+      - name: Submit job
+        id: alien_submit
+        run: |
+           exit 0
+
+      - name: Wait job completion
+        id: wait_alien
+        run: |
+           exit 0
+      
