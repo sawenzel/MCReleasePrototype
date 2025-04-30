@@ -33,12 +33,8 @@ jobs:
            echo "Job is asking for package ${PACKAGE}"
            
            # split package into root and version for checks on cvmfs
-
-           # Strip optional prefix like VO_ALICE@
-           cleaned="${PACKAGE#*@}"   # If '@' not present, it returns the whole string
-           echo "cleaned ${cleaned}"
-           # Split on '::'
-           IFS='::' read -r PACKAGE_ROOT PACKAGE_VERSION <<< "$cleaned"
+           PACKAGE_ROOT=$(echo "$PACKAGE" | awk -F'::' '{print $1}')
+           PACKAGE_VERSION=$(echo "$PACKAGE" | awk -F'::' '{print $2}')
 
            echo "PACKAGE_ROOT: $PACKAGE_ROOT"
            echo "PACKAGE_VERSION: $PACKAGE_VERSION"
