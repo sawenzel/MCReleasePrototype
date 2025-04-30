@@ -113,7 +113,7 @@ jobs:
            awk -v id="$ID1" '$2 == id { print "HELLO" }' status_output.out > result.out
            
            echo "Waiting for job ${ID1} to finish ..."
-           for i in {1..10}; do
+           for i in {1..60}; do
               JOBSTATUS=$(alien.py ps -j ${ID1} 2>&1 | sed 's/^[[:space:]]*//' | tr -s ' ' | awk -v id="$ID1" '$2 == id { print $3 }')
               echo "Current status is ${JOBSTATUS}"
               if [ -z "$JOBSTATUS" ]; then
