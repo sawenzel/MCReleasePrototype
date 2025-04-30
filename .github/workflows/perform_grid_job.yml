@@ -21,7 +21,7 @@ jobs:
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
           NEW_FILES=$(git diff --name-status "$BASE_SHA" "$HEAD_SHA" | grep '^A' | awk '{print $2}' | grep '^jobs/' | grep '*.sh' || true)
           echo "new_files=$NEW_FILES" >> $GITHUB_OUTPUT
-          echi "new_files=$NEW_FILES"
+          echo "new_files=$NEW_FILES"
 
       - name: Find job file
         id: find_job
