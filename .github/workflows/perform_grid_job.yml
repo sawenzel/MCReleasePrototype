@@ -24,15 +24,16 @@ jobs:
           echo "new_files=$NEW_FILES" >> $GITHUB_OUTPUT
           echo "new_files=$NEW_FILES"
 
-      - name: Find job file
-        id: find_job
-        run: |
-          exit 0
-
       - name: Determine job CVMFS package and check if package available
         id: cvmfs_package_check
         run: |
            # Checks if the package referenced in the job file exists
+           PACKAGE=$(grep '^#JDL_PACKAGE' ${{ steps.check.outputs.new_files }} | sed 's/.=//')
+           echo "Job is asking for package ${PACKAGE}"
+
+           CVMFS_BASE_PATH='/cvmfs/alice.cern.ch/el9-x86/Packages/'
+           
+           
            exit 0
            
       - name: Submit job
