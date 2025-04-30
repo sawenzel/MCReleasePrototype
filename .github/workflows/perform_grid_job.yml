@@ -98,19 +98,17 @@ jobs:
         id: wait_alien
         shell: bash
         run: |
-           set +e
            source alien_env.env
            ID1=${{ steps.alien_submit.outputs.alien_job_id }}
-           echo "CHECK ${ID1}"
            echo "$ID1" | od -c
            ID1=$(echo "$ID1" | tr -d '\r\n[:space:]')
            echo "$ID1" | od -c
-           set -x
-           T=$(alien.py ps -j ${ID1})
-           echo "${T}"
-           echo "----"
-
            alien.py ps -j "$ID1" 2>&1 | sed 's/^[[:space:]]*//' | tr -s ' ' | tee status_output.out
+           echo "xxxxx"
+           cat -A status_output.out
+           echo "<--"
+           awk -v id="$ID1" '{ print $2, "==", id, ($2 == id ? "MATCH" : "NO" ) }' status_output.out
+           echo "-->"
            awk -v id="$ID1" '$2 == id { print "HELLO" }' status_output.out > result.out
            echo "--"
            cat result.out
