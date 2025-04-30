@@ -103,9 +103,13 @@ jobs:
            source alien_env.env
            ID1=${{ steps.alien_submit.outputs.alien_job_id }}
            echo "CHECK ${ID1}"
+
+           T=$(alien.py ps -j ${ID1})
+           echo "${T}"
+           echo "----"
            
            r=$(alien.py ps -j ${ID1} 2>&1 | grep ${ID1})
-           echo ${r}
+           echo "${r}"
 
            r2=$(alien.py ps -j "$ID1" 2>&1 | awk -v id="$ID1" '$1 == id')
            echo "${r2}"
