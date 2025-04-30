@@ -99,8 +99,10 @@ jobs:
            
            echo "Waiting for job ${ID1} to finish ..."
            for i in {1..10}; do
+              set -x
               JOBSTATUS=$(alien.py ps -j "${ID1}" | awk '{print $3}')
               echo "Current status is ${JOBSTATUS}"
+              set +x
               if [ -z "$JOBSTATUS" ]; then
                 echo "Warning: No job status found for job ID $ID1"
               fi
