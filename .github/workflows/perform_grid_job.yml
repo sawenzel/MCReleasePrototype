@@ -87,10 +87,14 @@ jobs:
         #      The link is ${{ steps.check.outputs.alien_job_url }}
         id: find_id
         run: |
-            echo "Job id is ${{ steps.check.outputs.alien_job_url }}"
+            echo "Job id is ${{ steps.check.outputs.ALIEN_JOB_ID }}"
              
       - name: Wait job completion
         id: wait_alien
         run: |
-           exit 0
-      
+           set +e  # disable exit-on-error
+           set -x
+           /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > env.txt                                              
+           source env.txt  
+
+           
