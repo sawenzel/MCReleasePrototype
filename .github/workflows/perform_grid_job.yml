@@ -16,22 +16,7 @@ jobs:
 
       - name: Dump env before anything
         run: env | sort
-      
-      - name: Disk space
-        run: |
-          df -h
-
-      - name: Debug Python sys.path
-        run: |
-          python3 -c "import sys; import pprint; pprint.pprint(sys.path)"
-   
-      - name: Run alien.py safely
-        shell: bash
-        run: |
-          /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > env.txt                                              
-          source env.txt                                                        
-          alien.py ls
-      
+       
       - name: Find added files in jobs
         id: check
         run: |
@@ -71,6 +56,8 @@ jobs:
       - name: Submit job
         id: alien_submit
         run: |
+           /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > env.txt                                              
+           source env.txt  
            alien.py ls
         
            RAW_OUTPUT=$(${O2DPG_ROOT}/GRID/utils/grid_submit.sh --script ${{ steps.check.outputs.new_files }} --ttl 600 --prodsplit 1)
