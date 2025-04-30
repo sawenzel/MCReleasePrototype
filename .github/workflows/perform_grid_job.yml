@@ -25,9 +25,11 @@ jobs:
         run: |
           python3 -c "import sys; import pprint; pprint.pprint(sys.path)"
    
-      - name: Run Python safely
+      - name: Run alien.py safely
         shell: bash
         run: |
+          /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > env.txt                                              
+          source env.txt                                                        
           alien.py ls
       
       - name: Find added files in jobs
