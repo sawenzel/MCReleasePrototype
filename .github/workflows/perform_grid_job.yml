@@ -99,11 +99,10 @@ jobs:
         shell: bash
         run: |
            set +e
-           set -x
            source alien_env.env
            ID1=${{ steps.alien_submit.outputs.alien_job_id }}
            echo "CHECK ${ID1}"
-
+           set -x
            T=$(alien.py ps -j ${ID1})
            echo "${T}"
            echo "----"
@@ -111,7 +110,7 @@ jobs:
            r=$(alien.py ps -j ${ID1} 2>&1 | grep ${ID1})
            echo "${r}"
 
-           r2=$(alien.py ps -j "$ID1" 2>&1 | awk -v id="$ID1" '$1 == id')
+           r2=$(alien.py ps -j "$ID1" 2>&1 | awk -v id="$ID1" '$2 == id')
            echo "${r2}"
            exit 1
            
