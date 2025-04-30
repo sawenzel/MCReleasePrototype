@@ -78,11 +78,10 @@ jobs:
         uses: peter-evans/create-or-update-comment@v4
         with:
            issue-number: ${{ github.event.pull_request.number }}
-        body: |
-           ✅ The job has started!
-           The link is ${{ steps.check.outputs.alien_job_url }}
-           - hello
-           
+           body: |
+             ✅ The job has started!
+             The link is ${{ steps.check.outputs.alien_job_url }}
+             
       - name: Wait job completion
         id: wait_alien
         run: |
