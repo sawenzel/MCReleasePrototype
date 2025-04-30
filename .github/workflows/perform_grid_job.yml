@@ -76,6 +76,7 @@ jobs:
            echo "ALIEN_JOB_ID=${ALIEN_JOB_ID}" >> $GITHUB_OUTPUT
            echo "${ALIEN_JOB_ID}" > job_id.txt
            echo "alien_job_id=${ALIEN_JOB_ID}" >> $GITHUB_OUTPUT
+           cat job_id.txt
            
       - name: Comment on PR
         # uses: peter-evans/create-or-update-comment@v4
