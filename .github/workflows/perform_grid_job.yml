@@ -66,7 +66,7 @@ jobs:
            grep 'display progress' submit_log.txt
            
            # parse the jobs URL and PROCESS ID
-           JOB_URL=$(grep 'display progress' submit_log.txt | awk '//{print $4}')
+           JOB_URL=$(grep 'display progress' submit_log.txt | awk '//{print $5}')
            echo "${JOB_URL}"
            if [ ! "${JOB_URL}" ]; then
              echo "Not good"
@@ -79,12 +79,15 @@ jobs:
            echo "ALIEN_JOB_ID=${ALIEN_JOB_ID}"
            
       - name: Comment on PR
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-           issue-number: ${{ github.event.pull_request.number }}
-           body: |
-             ✅ The job has started!
-             The link is ${{ steps.check.outputs.alien_job_url }}
+        # uses: peter-evans/create-or-update-comment@v4
+        # with:
+        #    issue-number: ${{ github.event.pull_request.number }}
+        #    body: |
+        #      ✅ The job has started!
+        #      The link is ${{ steps.check.outputs.alien_job_url }}
+        id: find_id
+        run: |
+            echo "Job id is ${{ steps.check.outputs.alien_job_url }}"
              
       - name: Wait job completion
         id: wait_alien
