@@ -90,6 +90,7 @@ jobs:
              
       - name: Wait job completion
         id: wait_alien
+        shell: bash
         run: |
            /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > env.txt                                              
            source env.txt
@@ -97,11 +98,14 @@ jobs:
            echo "CHECK ${ID1}"
            
            echo "Waiting for job ${ID1} to finish ..."
-           for i in {1..60}; do
-              JOBSTATUS=$(alien.py ps -j "${ID1}" | awk '//{print $3}')
+           for i in {1..10}; do
+              JOBSTATUS=$(alien.py ps -j "${ID1}" | awk '{print $3}')
               echo "Current status is ${JOBSTATUS}"
+              if [ -z "$JOBSTATUS" ]; then
+                echo "Warning: No job status found for job ID $ID1"
+              fi
               # echo -ne "Waiting for jobs to return; Last status ${JOBSTATUS}"
-              if [ "${JOBSTATUS}" == "D" ]; then
+              if [[ "${JOBSTATUS}" == "D" ]]; then
                 echo "Job done"
                 exit 0
               fi  
