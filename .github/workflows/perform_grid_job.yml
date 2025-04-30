@@ -26,7 +26,6 @@ jobs:
 
       - name: Determine job CVMFS package and check if package available
         id: cvmfs_package_check
-        shell: bash
         run: |
            # Checks if the package referenced in the job file exists
            PACKAGE=$(grep '^#JDL_PACKAGE' ${{ steps.check.outputs.new_files }} | sed 's/.*=//')
@@ -35,17 +34,16 @@ jobs:
            # split package into root and version for checks on cvmfs
            PACKAGE_ROOT=$(echo "$PACKAGE" | awk -F'::' '{print $1}')
            PACKAGE_VERSION=$(echo "$PACKAGE" | awk -F'::' '{print $2}')
-
            echo "PACKAGE_ROOT: $PACKAGE_ROOT"
            echo "PACKAGE_VERSION: $PACKAGE_VERSION"
-           
            CVMFS_BASE_PATH="/cvmfs/alice.cern.ch/el9-x86_64/Packages/${PACKAGE_ROOT:-notset}/${PACKAGE_VERSION:-notset}"
+           ls /cvmfs/
 
            echo "Checking for presence of ${CVMFS_BASE_PATH}"
            if [ -d "${CVMFS_BASE_PATH}" ]; then
               echo "Found CVFMS path"
            else
-              echo "CMVFS Not found;
+              echo "CMVFS Not found"
               exit 1
            fi
 
