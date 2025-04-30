@@ -56,8 +56,6 @@ jobs:
       - name: Submit job
         id: alien_submit
         run: |
-           set +e  # disable exit-on-error
-           set -x
            /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > env.txt                                              
            source env.txt  
            
@@ -92,16 +90,14 @@ jobs:
       - name: Wait job completion
         id: wait_alien
         run: |
-           set +e  # disable exit-on-error
-           set -x
            /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > env.txt                                              
            source env.txt
            ID1=$(cat job_id.txt)
            echo "CHECK ${ID1}"
            
-           echo "Waiting for job ${{ steps.check.outputs.ALIEN_JOB_ID }} to finish ..."
+           echo "Waiting for job ${ID1} to finish ..."
            for i in {1..60}; do
-              JOBSTATUS=$(alien.py ps -j "${{ steps.check.outputs.ALIEN_JOB_ID }}" | awk '//{print $3}')
+              JOBSTATUS=$(alien.py ps -j "${ID1}" | awk '//{print $3}')
               # echo -ne "Waiting for jobs to return; Last status ${JOBSTATUS}"
               if [ "${JOBSTATUS}" == "D" ]; then
                 echo "Job done"
