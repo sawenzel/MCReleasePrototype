@@ -101,7 +101,8 @@ jobs:
            source alien_env.env
            ID1=${{ steps.alien_submit.outputs.alien_job_id }}
            echo "$ID1" | od -c
-           ID1=$(echo "$ID1" | tr -d '\r\n[:space:]')
+           #ID1=$(echo "$ID1" | tr -d '\r\n[:space:]')
+           ID1=$(echo "$ID1" | tr -cd '0-9')
            echo "$ID1" | od -c
            alien.py ps -j "$ID1" 2>&1 | sed 's/^[[:space:]]*//' | tr -s ' ' | tee status_output.out
            echo "xxxxx"
