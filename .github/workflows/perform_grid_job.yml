@@ -34,7 +34,7 @@ jobs:
            # split package into root and version for checks on cvmfs
 
            # Strip optional prefix like [VO_ALICE@]
-           cleaned="${input#*@}"  # Removes everything up to and including '@]' if present
+           cleaned="${PACKAGE#*@}"  # Removes everything up to and including '@]' if present
            echo "cleaned ${cleaned}"
            # Split on '::'
            IFS='::' read -r PACKAGE_ROOT PACKAGE_VERSION <<< "$cleaned"
