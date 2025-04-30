@@ -61,11 +61,14 @@ jobs:
            
            RAW_OUTPUT=$(${O2DPG_ROOT}/GRID/utils/grid_submit.sh --script ${{ steps.check.outputs.new_files }} --ttl 600 --prodsplit 1)
            echo ${RAW_OUTPUT}
-
+           
+           echo ${RAW_OUTPUT} | grep 'display progress'
+           
            # parse the jobs URL and PROCESS ID
            JOB_URL=$(echo ${RAW_OUTPUT} | grep 'display progress' | awk '//{print $4}')
+           print ${JOB_URL}
            if [ ! "${JOB_URL}" ]; then
-             exit 1
+             echo "Not good"
            fi
            echo "ALIEN_JOB_URL=${JOB_URL}" >> $GITHUB_OUTPUT
 
