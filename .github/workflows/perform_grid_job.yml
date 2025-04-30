@@ -75,6 +75,7 @@ jobs:
            ALIEN_JOB_ID=$(echo ${JOB_URL} | sed 's/.*=//')
            echo "ALIEN_JOB_ID=${ALIEN_JOB_ID}" >> $GITHUB_OUTPUT
            echo "ALIEN_JOB_ID=${ALIEN_JOB_ID}" > job_id.txt
+           echo "alien_job_id=${ALIEN_JOB_ID}" >> $GITHUB_OUTPUT
            
       - name: Comment on PR
         # uses: peter-evans/create-or-update-comment@v4
@@ -85,7 +86,7 @@ jobs:
         #      The link is ${{ steps.check.outputs.alien_job_url }}
         id: find_id
         run: |
-            echo "Job id is ${{ steps.check.outputs.ALIEN_JOB_ID }}"
+            echo "Job id is ${{ steps.check.outputs.alien_job_id }}"
              
       - name: Wait job completion
         id: wait_alien
@@ -98,6 +99,7 @@ jobs:
            echo "Waiting for job ${ID1} to finish ..."
            for i in {1..60}; do
               JOBSTATUS=$(alien.py ps -j "${ID1}" | awk '//{print $3}')
+              echo "Current status is ${JOBSTATUS}"
               # echo -ne "Waiting for jobs to return; Last status ${JOBSTATUS}"
               if [ "${JOBSTATUS}" == "D" ]; then
                 echo "Job done"
