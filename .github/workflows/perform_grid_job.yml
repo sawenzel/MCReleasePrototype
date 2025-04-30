@@ -97,15 +97,15 @@ jobs:
            /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > env.txt                                              
            source env.txt
            
-           echo "Polling for job finish ..."
+           echo "Waiting for job ${{ steps.check.outputs.ALIEN_JOB_ID }} to finish ..."
            for i in {1..60}; do
-              JOBSTATUS=$(alien.py ps -j ${{ steps.check.outputs.ALIEN_JOB_ID }} | awk '//{print $3}')
+              JOBSTATUS=$(alien.py ps -j "${{ steps.check.outputs.ALIEN_JOB_ID }}" | awk '//{print $3}')
               # echo -ne "Waiting for jobs to return; Last status ${JOBSTATUS}"
               if [ "${JOBSTATUS}" == "D" ]; then
                 echo "Job done"
                 exit 0
               fi  
-              sleep 60
+              sleep 10
            done
            exit 1
 
