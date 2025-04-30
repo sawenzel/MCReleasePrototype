@@ -92,6 +92,7 @@ jobs:
         id: wait_alien
         shell: bash
         run: |
+           set +e
            /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > env.txt                                              
            source env.txt
            ID1=$(cat job_id.txt)
