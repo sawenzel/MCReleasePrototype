@@ -61,6 +61,27 @@ jobs:
            
            RAW_OUTPUT=$(${O2DPG_ROOT}/GRID/utils/grid_submit.sh --script ${{ steps.check.outputs.new_files }} --ttl 600 --prodsplit 1)
            echo ${RAW_OUTPUT}
+
+           # parse the jobs URL and PROCESS ID
+           JOB_URL=$(echo ${RAW_OUTPUT} | grep 'display progress' | awk '//{print $4}')
+           if [ ! "${JOB_URL}" ]; then
+             exit 1
+           fi
+           echo "ALIEN_JOB_URL=${JOB_URL}" >> $GITHUB_OUTPUT
+
+           # find out job id
+           ALIEN_JOB_ID=$(echo ${JOB_URL} | sed 's/.*=//')
+           echo "ALIEN_JOB_ID=${ALIEN_JOB_ID}" >> $GITHUB_OUTPUT
+           echo "ALIEN_JOB_ID=${ALIEN_JOB_ID}"
+           
+      - name: Comment on PR
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+           issue-number: ${{ github.event.pull_request.number }}
+        body: |
+           ✅ The job has started!
+           The link is ${{ steps.check.outputs.alien_job_url }}
+           - hello
            
       - name: Wait job completion
         id: wait_alien
