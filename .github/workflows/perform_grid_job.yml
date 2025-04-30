@@ -17,9 +17,10 @@ jobs:
       - name: Find added files in jobs
         id: check
         run: |
+          set -x
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
-          NEW_FILES=$(git diff --name-status "$BASE_SHA" "$HEAD_SHA" | grep '^A' | awk '{print $2}' | grep '^jobs/' | grep '*.sh' || true)
+          NEW_FILES=$(git diff --name-status "$BASE_SHA" "$HEAD_SHA" | grep '^A' | awk '{print $2}' | grep '^jobs/' || true)
           echo "new_files=$NEW_FILES" >> $GITHUB_OUTPUT
           echo "new_files=$NEW_FILES"
 
