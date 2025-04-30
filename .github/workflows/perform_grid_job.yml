@@ -76,7 +76,7 @@ jobs:
            # find out job id
            ALIEN_JOB_ID=$(echo ${JOB_URL} | sed 's/.*=//')
            echo "ALIEN_JOB_ID=${ALIEN_JOB_ID}" >> $GITHUB_OUTPUT
-           echo "ALIEN_JOB_ID=${ALIEN_JOB_ID}"
+           echo "ALIEN_JOB_ID=${ALIEN_JOB_ID}" > job_id.txt
            
       - name: Comment on PR
         # uses: peter-evans/create-or-update-comment@v4
@@ -96,6 +96,8 @@ jobs:
            set -x
            /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > env.txt                                              
            source env.txt
+           ID1=$(cat job_id.txt)
+           echo "CHECK ${ID1}"
            
            echo "Waiting for job ${{ steps.check.outputs.ALIEN_JOB_ID }} to finish ..."
            for i in {1..60}; do
