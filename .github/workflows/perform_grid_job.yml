@@ -16,14 +16,14 @@ jobs:
 
       - name: Dump env before anything
         run: env | sort
-         
+            
+      - name: Debug Python sys.path
+        run: |
+          python3 -c "import sys; import pprint; pprint.pprint(sys.path)"
+   
       - name: Run Python safely
         shell: bash
         run: |
-          echo "PYTHONHOME before: $PYTHONHOME"
-          echo "PYTHONPATH before: $PYTHONPATH"
-          unset PYTHONHOME
-          unset PYTHONPATH
           alien.py ls
       
       - name: Find added files in jobs
