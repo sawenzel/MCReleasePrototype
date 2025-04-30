@@ -16,7 +16,11 @@ jobs:
 
       - name: Dump env before anything
         run: env | sort
-            
+      
+      - name: Disk space
+        run: |
+          df -h
+
       - name: Debug Python sys.path
         run: |
           python3 -c "import sys; import pprint; pprint.pprint(sys.path)"
