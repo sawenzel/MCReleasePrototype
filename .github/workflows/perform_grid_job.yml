@@ -56,6 +56,7 @@ jobs:
       - name: Submit job
         id: alien_submit
         run: |
+           set +e  # disable exit-on-error
            /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > env.txt                                              
            source env.txt  
            
@@ -63,6 +64,7 @@ jobs:
            echo ${RAW_OUTPUT}
            
            echo ${RAW_OUTPUT} | grep 'display progress'
+           echo "FOO"
            
            # parse the jobs URL and PROCESS ID
            JOB_URL=$(echo ${RAW_OUTPUT} | grep 'display progress' | awk '//{print $4}')
