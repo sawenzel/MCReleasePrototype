@@ -26,6 +26,7 @@ jobs:
 
       - name: Determine job CVMFS package and check if package available
         id: cvmfs_package_check
+        shell: bash
         run: |
            # Checks if the package referenced in the job file exists
            PACKAGE=$(grep '^#JDL_PACKAGE' ${{ steps.check.outputs.new_files }} | sed 's/.*=//')
@@ -33,8 +34,8 @@ jobs:
            
            # split package into root and version for checks on cvmfs
 
-           # Strip optional prefix like [VO_ALICE@]
-           cleaned="${PACKAGE#*@}"  # Removes everything up to and including '@]' if present
+           # Strip optional prefix like VO_ALICE@
+           cleaned="${PACKAGE#*@}"   # If '@' not present, it returns the whole string
            echo "cleaned ${cleaned}"
            # Split on '::'
            IFS='::' read -r PACKAGE_ROOT PACKAGE_VERSION <<< "$cleaned"
