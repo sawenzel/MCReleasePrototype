@@ -103,6 +103,8 @@ jobs:
            ID1=${{ steps.alien_submit.outputs.alien_job_id }}
            echo "CHECK ${ID1}"
            echo "$ID1" | od -c
+           ID1=$(echo "$ID1" | tr -d '\r\n[:space:]')
+           echo "$ID1" | od -c
            set -x
            T=$(alien.py ps -j ${ID1})
            echo "${T}"
