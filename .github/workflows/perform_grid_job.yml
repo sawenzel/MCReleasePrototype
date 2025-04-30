@@ -28,11 +28,25 @@ jobs:
         id: cvmfs_package_check
         run: |
            # Checks if the package referenced in the job file exists
-           PACKAGE=$(grep '^#JDL_PACKAGE' ${{ steps.check.outputs.new_files }} | sed 's/.=//')
+           PACKAGE=$(grep '^#JDL_PACKAGE' ${{ steps.check.outputs.new_files }} | sed 's/.*=//')
            echo "Job is asking for package ${PACKAGE}"
-
-           CVMFS_BASE_PATH='/cvmfs/alice.cern.ch/el9-x86/Packages/'
            
+           # split package into root and version for checks on cvmfs
+
+           # Strip optional prefix like [VO_ALICE@]
+           cleaned="${input#*@]}"  # Removes everything up to and including '@]' if present
+           cleaned="${cleaned#*\]}" # Just in case, removes everything up to and including ']'
+           # Split on '::'
+           IFS='::' read -r PACKAGE_ROOT PACKAGE_VERSION <<< "$cleaned"
+
+           echo "PACKAGE_ROOT: $PACKAGE_ROOT"
+           echo "PACKAGE_VERSION: $PACKAGE_VERSION"
+           
+           CVMFS_BASE_PATH='/cvmfs/alice.cern.ch/el9-x86/Packages/${PACKAGE_ROOT}/${PACKAGE_VERSION}'
+
+           echo "Checking for presence of ${CMVFS_BASE_PATH}"
+
+           [ -d ${CVMFS_BASE_PATH} ] && exit 1
            
            exit 0
            
