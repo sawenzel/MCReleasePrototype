@@ -107,9 +107,6 @@ jobs:
            echo "${T}"
            echo "----"
            
-           r=$(alien.py ps -j ${ID1} 2>&1 | grep ${ID1})
-           echo "${r}"
-
            r2=$(alien.py ps -j "$ID1" 2>&1 | awk -v id="$ID1" '$2 == id')
            echo "${r2}"
            exit 1
