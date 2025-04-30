@@ -99,9 +99,9 @@ jobs:
            
            echo "Waiting for job ${ID1} to finish ..."
            for i in {1..10}; do
-              alien.py ps -j ${ID1} 
+              alien.py ps -j ${ID1} | grep ${ID1}
               #set -x
-              JOBSTATUS=$(alien.py ps -j ${ID1} 2>&1 | awk '{print $3}')
+              JOBSTATUS=$(alien.py ps -j ${ID1} 2>&1 | grep ${ID1} | awk '{print $3}')
               echo "Current status is ${JOBSTATUS}"
               #set +x
               if [ -z "$JOBSTATUS" ]; then
