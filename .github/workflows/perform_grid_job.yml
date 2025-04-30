@@ -74,7 +74,7 @@ jobs:
            # find out job id
            ALIEN_JOB_ID=$(echo ${JOB_URL} | sed 's/.*=//')
            echo "ALIEN_JOB_ID=${ALIEN_JOB_ID}" >> $GITHUB_OUTPUT
-           echo "ALIEN_JOB_ID=${ALIEN_JOB_ID}" > job_id.txt
+           echo "${ALIEN_JOB_ID}" > job_id.txt
            echo "alien_job_id=${ALIEN_JOB_ID}" >> $GITHUB_OUTPUT
            
       - name: Comment on PR
