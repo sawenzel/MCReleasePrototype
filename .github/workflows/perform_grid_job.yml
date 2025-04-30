@@ -61,15 +61,12 @@ jobs:
            /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > env.txt                                              
            source env.txt  
            
-           RAW_OUTPUT=$(${O2DPG_ROOT}/GRID/utils/grid_submit.sh --script ${{ steps.check.outputs.new_files }} --ttl 600 --prodsplit 1 2>&1)
-           echo ${RAW_OUTPUT}
+           RAW_OUTPUT=$(${O2DPG_ROOT}/GRID/utils/grid_submit.sh --script ${{ steps.check.outputs.new_files }} --ttl 600 --prodsplit 1 2> submit_log.txt)
            
-           echo ${RAW_OUTPUT} | grep 'display progress'
-           printf '%s\n' "$RAW_OUTPUT" | grep 'display progress'
-           echo "FOO"
+           grep 'display progress' submit_log.txt
            
            # parse the jobs URL and PROCESS ID
-           JOB_URL=$(echo ${RAW_OUTPUT} | grep 'display progress' | awk '//{print $4}')
+           JOB_URL=$(grep 'display progress' submit_log.txt | awk '//{print $4}')
            echo "${JOB_URL}"
            if [ ! "${JOB_URL}" ]; then
              echo "Not good"
