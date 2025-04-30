@@ -68,7 +68,7 @@ jobs:
            
            # parse the jobs URL and PROCESS ID
            JOB_URL=$(echo ${RAW_OUTPUT} | grep 'display progress' | awk '//{print $4}')
-           print ${JOB_URL}
+           echo "${JOB_URL}"
            if [ ! "${JOB_URL}" ]; then
              echo "Not good"
            fi
