@@ -95,6 +95,18 @@ jobs:
            set +e  # disable exit-on-error
            set -x
            /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > env.txt                                              
-           source env.txt  
+           source env.txt
+           
+           echo "Polling for job finish ..."
+           for i in {1..60}; do
+              JOBSTATUS=$(alien.py ps -j ${{ steps.check.outputs.ALIEN_JOB_ID }} | awk '//{print $3}')
+              # echo -ne "Waiting for jobs to return; Last status ${JOBSTATUS}"
+              if [ "${JOBSTATUS}" == "D" ]; then
+                echo "Job done"
+                exit 0
+              fi  
+              sleep 60
+           done
+           exit 1
 
            
