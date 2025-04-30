@@ -93,6 +93,7 @@ jobs:
         shell: bash
         run: |
            set +e
+           set -x
            /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > env.txt                                              
            source env.txt
            ID1=$(cat job_id.txt)
@@ -100,7 +101,7 @@ jobs:
            
            echo "Waiting for job ${ID1} to finish ..."
            for i in {1..10}; do
-              alien.py ps -j ${ID1} | grep "${ID1}"
+              alien.py ps -j ${ID1} 2>&1 | grep "${ID1}"
               #set -x
               JOBSTATUS=$(alien.py ps -j ${ID1} 2>&1 | grep "${ID1}" | awk '{print $3}')
               echo "Current status is ${JOBSTATUS}"
