@@ -36,13 +36,14 @@ jobs:
            # Strip optional prefix like [VO_ALICE@]
            cleaned="${input#*@]}"  # Removes everything up to and including '@]' if present
            cleaned="${cleaned#*\]}" # Just in case, removes everything up to and including ']'
+           echo "cleaned ${cleaned}"
            # Split on '::'
            IFS='::' read -r PACKAGE_ROOT PACKAGE_VERSION <<< "$cleaned"
 
            echo "PACKAGE_ROOT: $PACKAGE_ROOT"
            echo "PACKAGE_VERSION: $PACKAGE_VERSION"
            
-           CVMFS_BASE_PATH='/cvmfs/alice.cern.ch/el9-x86/Packages/${PACKAGE_ROOT}/${PACKAGE_VERSION}'
+           CVMFS_BASE_PATH='/cvmfs/alice.cern.ch/el9-x86/Packages/${PACKAGE_ROOT:-notset}/${PACKAGE_VERSION:-notset}'
 
            echo "Checking for presence of ${CMVFS_BASE_PATH}"
 
