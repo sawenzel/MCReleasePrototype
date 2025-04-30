@@ -14,6 +14,18 @@ jobs:
         with:
           fetch-depth: 0 
 
+      - name: Dump env before anything
+        run: env | sort
+         
+      - name: Run Python safely
+        shell: bash
+        run: |
+          echo "PYTHONHOME before: $PYTHONHOME"
+          echo "PYTHONPATH before: $PYTHONPATH"
+          unset PYTHONHOME
+          unset PYTHONPATH
+          alien.py ls
+      
       - name: Find added files in jobs
         id: check
         run: |
