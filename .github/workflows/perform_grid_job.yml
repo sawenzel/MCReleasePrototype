@@ -106,6 +106,13 @@ jobs:
            T=$(alien.py ps -j ${ID1})
            echo "${T}"
            echo "----"
+
+           alien.py ps -j "$ID1" 2>&1 | tee status_output.out
+           awk -v id="$ID1" '$2 == id { print $3 }' status_output.out > result.out
+           echo "--"
+           cat result.out
+           echo "--"
+           exit 1
            
            r2=$(alien.py ps -j "$ID1" 2>&1 | awk -v id="$ID1" '$2 == id')
            echo "${r2}"
