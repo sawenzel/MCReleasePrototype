@@ -12,7 +12,7 @@ jobs:
       - name: Checkout PR code
         uses: actions/checkout@v4
         with:
-          fetch-depth 0 
+          fetch-depth: 0 
 
       - name: Find added files in jobs
         id: check
