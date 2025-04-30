@@ -108,7 +108,7 @@ jobs:
            echo "----"
 
            alien.py ps -j "$ID1" 2>&1 | sed 's/^[[:space:]]*//' | tr -s ' ' | tee status_output.out
-           awk -v id="$ID1" 'if($2 == id) { print "HELLO" }' status_output.out > result.out
+           awk -v id="$ID1" '$2 == id { print "HELLO" }' status_output.out > result.out
            echo "--"
            cat result.out
            echo "--"
