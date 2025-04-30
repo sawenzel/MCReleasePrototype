@@ -7,7 +7,7 @@ on:
 
 jobs:
   alien-job-pipeline:
-    runs-on: self-hosted
+    runs-on: [self-hosted, alibi-cvmfs]
     steps:
       - name: Checkout PR code
         uses: actions/checkout@v4
