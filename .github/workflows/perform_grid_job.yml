@@ -84,10 +84,10 @@ jobs:
         #    issue-number: ${{ github.event.pull_request.number }}
         #    body: |
         #      ✅ The job has started!
-        #      The link is ${{ steps.check.outputs.alien_job_url }}
+        #      The link is ${{ steps.alien_submit.outputs.alien_job_url }}
         id: find_id
         run: |
-            echo "Job id is ${{ steps.check.outputs.alien_job_id }}"
+            echo "Job id is ${{ steps.alien_submit.outputs.alien_job_id }}"
              
       - name: Wait job completion
         id: wait_alien
@@ -97,7 +97,7 @@ jobs:
            set -x
            /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > env.txt                                              
            source env.txt
-           ID1=$(cat job_id.txt)
+           ID1=${{ steps.alien_submit.outputs.alien_job_id }}
            echo "CHECK ${ID1}"
            
            echo "Waiting for job ${ID1} to finish ..."
