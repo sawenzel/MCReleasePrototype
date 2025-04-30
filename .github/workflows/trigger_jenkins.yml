@@ -3,6 +3,8 @@ name: Trigger and Monitor Jenkins Build
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    paths:
+      - 'releases/**'
 
 jobs:
   trigger-and-monitor:
