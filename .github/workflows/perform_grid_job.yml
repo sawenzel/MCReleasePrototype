@@ -42,7 +42,7 @@ jobs:
            CVMFS_BASE_PATH="/cvmfs/alice.cern.ch/el9-x86_64/Packages/${PACKAGE_ROOT:-notset}/${PACKAGE_VERSION:-notset}"
 
            echo "Checking for presence of ${CVMFS_BASE_PATH}"
-           [ -d ${CVMFS_BASE_PATH} ] && exit 1
+           [ ! -d ${CVMFS_BASE_PATH} ] && exit 1
 
            # other checks can be added
            
