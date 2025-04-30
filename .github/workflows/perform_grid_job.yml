@@ -39,19 +39,19 @@ jobs:
            echo "PACKAGE_ROOT: $PACKAGE_ROOT"
            echo "PACKAGE_VERSION: $PACKAGE_VERSION"
            
-           CVMFS_BASE_PATH='/cvmfs/alice.cern.ch/el9-x86/Packages/${PACKAGE_ROOT:-notset}/${PACKAGE_VERSION:-notset}'
+           CVMFS_BASE_PATH="/cvmfs/alice.cern.ch/el9-x86/Packages/${PACKAGE_ROOT:-notset}/${PACKAGE_VERSION:-notset}"
 
            echo "Checking for presence of ${CVMFS_BASE_PATH}"
-
            [ -d ${CVMFS_BASE_PATH} ] && exit 1
-           
-           exit 0
+
+           # other checks can be added
            
       - name: Submit job
         id: alien_submit
         run: |
-           exit 0
-
+           RAW_OUTPUT=$(${O2DPG_ROOT}/GRID/utils/grid_submit.sh --script ${{ steps.check.outputs.new_files }} --ttl 600 --prodsplit 1)
+           echo ${RAW_OUTPUT)
+           
       - name: Wait job completion
         id: wait_alien
         run: |
