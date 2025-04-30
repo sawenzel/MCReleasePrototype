@@ -102,6 +102,7 @@ jobs:
            source alien_env.env
            ID1=${{ steps.alien_submit.outputs.alien_job_id }}
            echo "CHECK ${ID1}"
+           echo "$ID1" | od -c
            set -x
            T=$(alien.py ps -j ${ID1})
            echo "${T}"
