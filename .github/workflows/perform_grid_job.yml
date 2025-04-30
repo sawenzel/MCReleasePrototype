@@ -101,7 +101,7 @@ jobs:
            source alien_env.env
            ID1=${{ steps.alien_submit.outputs.alien_job_id }}
            echo "$ID1" | od -c
-           #ID1=$(echo "$ID1" | tr -d '\r\n[:space:]')
+           #this removes any weird chars, otherwise the awk match doesn't work
            ID1=$(echo "$ID1" | tr -cd '0-9')
            echo "$ID1" | od -c
            alien.py ps -j "$ID1" 2>&1 | sed 's/^[[:space:]]*//' | tr -s ' ' | tee status_output.out
@@ -111,26 +111,14 @@ jobs:
            awk -v id="$ID1" '{ print $2, "==", id, ($2 == id ? "MATCH" : "NO" ) }' status_output.out
            echo "-->"
            awk -v id="$ID1" '$2 == id { print "HELLO" }' status_output.out > result.out
-           echo "--"
-           cat result.out
-           echo "--"
-           exit 1
-           
-           r2=$(alien.py ps -j "$ID1" 2>&1 | awk -v id="$ID1" '$2 == id')
-           echo "${r2}"
-           exit 1
            
            echo "Waiting for job ${ID1} to finish ..."
            for i in {1..10}; do
-              alien.py ps -j ${ID1} 2>&1 | grep ${ID1}
-              #set -x
-              JOBSTATUS=$(alien.py ps -j ${ID1} 2>&1 | grep -F "${ID1}" | awk '{print $3}')
+              JOBSTATUS=$(alien.py ps -j ${ID1} 2>&1 | sed 's/^[[:space:]]*//' | tr -s ' ' | awk -v id="$ID1" '$2 == id { print $3 }')
               echo "Current status is ${JOBSTATUS}"
-              #set +x
               if [ -z "$JOBSTATUS" ]; then
                 echo "Warning: No job status found for job ID $ID1"
               fi
-              # echo -ne "Waiting for jobs to return; Last status ${JOBSTATUS}"
               if [[ "${JOBSTATUS}" == "D" ]]; then
                 echo "Job done"
                 exit 0
