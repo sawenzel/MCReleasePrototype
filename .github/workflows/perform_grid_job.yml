@@ -40,8 +40,6 @@ jobs:
            echo "PACKAGE_ROOT: $PACKAGE_ROOT"
            echo "PACKAGE_VERSION: $PACKAGE_VERSION"
            CVMFS_BASE_PATH="/cvmfs/alice.cern.ch/el9-x86_64/Packages/${PACKAGE_ROOT:-notset}/${PACKAGE_VERSION:-notset}"
-           ls /cvmfs/
-
            echo "Checking for presence of ${CVMFS_BASE_PATH}"
            if [ -d "${CVMFS_BASE_PATH}" ]; then
               echo "Found CVFMS path"
@@ -66,11 +64,9 @@ jobs:
            
            RAW_OUTPUT=$(${O2DPG_ROOT}/GRID/utils/grid_submit.sh --script ${{ steps.check.outputs.new_files }} --ttl 600 --prodsplit 1 2> submit_log.txt)
            
-           grep 'display progress' submit_log.txt
-           
            # parse the jobs URL and PROCESS ID
            JOB_URL=$(grep 'display progress' submit_log.txt | awk '//{print $5}')
-           echo "${JOB_URL}"
+           echo "JOB URL is: ${JOB_URL}"
            if [ ! "${JOB_URL}" ]; then
              echo "Not good"
            fi
@@ -81,37 +77,32 @@ jobs:
            echo "alien_job_id=${ALIEN_JOB_ID}" >> $GITHUB_OUTPUT
            
       - name: Comment on PR
-        # uses: peter-evans/create-or-update-comment@v4
-        # with:
-        #    issue-number: ${{ github.event.pull_request.number }}
-        #    body: |
-        #      ✅ The job has started!
-        #      The link is ${{ steps.alien_submit.outputs.alien_job_url }}
-        id: find_id
+        if: github.event.pull_request # Only runs in PR context
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_BOT_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
         run: |
-            echo "Job id is ${{ steps.alien_submit.outputs.alien_job_id }}"
+          COMMENT="✅ Job launched successfully here ${{ steps.alien_submit.outputs.alien_job_url }}"
+          
+          curl -s -H "Authorization: token $GITHUB_TOKEN" \
+               -H "Accept: application/vnd.github.v3+json" \
+               -X POST \
+               -d "$(jq -nc --arg body "$COMMENT" '{body: $body}')" \
+               "https://api.github.com/repos/${REPO}/issues/${PR_NUMBER}/comments"
              
       - name: Wait job completion
         id: wait_alien
         shell: bash
         run: |
            source alien_env.env
-           ID1=${{ steps.alien_submit.outputs.alien_job_id }}
-           echo "$ID1" | od -c
-           alien.py ps -j "$ID1" 2>&1 | sed 's/^[[:space:]]*//' | tr -s ' ' | tee status_output.out
-           echo "xxxxx"
-           cat -A status_output.out
-           echo "<--"
-           awk -v id="$ID1" '{ print $2, "==", id, ($2 == id ? "MATCH" : "NO" ) }' status_output.out
-           echo "-->"
-           awk -v id="$ID1" '$2 == id { print "HELLO" }' status_output.out > result.out
-           
-           echo "Waiting for job ${ID1} to finish ..."
+           JOB_ID=${{ steps.alien_submit.outputs.alien_job_id }}
+           echo "Waiting for job ${JOB_ID} to finish ..."
            for i in {1..60}; do
-              JOBSTATUS=$(alien.py ps -j ${ID1} 2>&1 | sed 's/^[[:space:]]*//' | tr -s ' ' | awk '{ print $3 }')
-              echo "Current status is ${JOBSTATUS}"
+              JOBSTATUS=$(alien.py ps -j ${JOB_ID} 2>&1 | sed 's/^[[:space:]]*//' | tr -s ' ' | awk '{ print $3 }')
+              # echo "Current status is ${JOBSTATUS}"
               if [ -z "$JOBSTATUS" ]; then
-                echo "Warning: No job status found for job ID $ID1"
+                echo "Warning: No job status found for job ${JOB_ID}"
               fi
               if [[ "${JOBSTATUS}" == "D" ]]; then
                 echo "Job done"
