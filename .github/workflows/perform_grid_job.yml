@@ -76,12 +76,9 @@ jobs:
            fi
            echo "ALIEN_JOB_URL=${JOB_URL}" >> $GITHUB_OUTPUT
 
-           # find out job id
-           ALIEN_JOB_ID=$(echo ${JOB_URL} | sed 's/.*=//')
-           echo "ALIEN_JOB_ID=${ALIEN_JOB_ID}" >> $GITHUB_OUTPUT
-           echo "${ALIEN_JOB_ID}" > job_id.txt
+           # find out job id (make sure it is number ... take away extra chars like color etc)
+           ALIEN_JOB_ID=$(echo ${JOB_URL} | sed 's/.*=//' | tr -cd '0-9')
            echo "alien_job_id=${ALIEN_JOB_ID}" >> $GITHUB_OUTPUT
-           cat job_id.txt
            
       - name: Comment on PR
         # uses: peter-evans/create-or-update-comment@v4
@@ -101,9 +98,6 @@ jobs:
            source alien_env.env
            ID1=${{ steps.alien_submit.outputs.alien_job_id }}
            echo "$ID1" | od -c
-           #this removes any weird chars, otherwise the awk match doesn't work
-           ID1=$(echo "$ID1" | tr -cd '0-9')
-           echo "$ID1" | od -c
            alien.py ps -j "$ID1" 2>&1 | sed 's/^[[:space:]]*//' | tr -s ' ' | tee status_output.out
            echo "xxxxx"
            cat -A status_output.out
@@ -114,7 +108,7 @@ jobs:
            
            echo "Waiting for job ${ID1} to finish ..."
            for i in {1..60}; do
-              JOBSTATUS=$(alien.py ps -j ${ID1} 2>&1 | sed 's/^[[:space:]]*//' | tr -s ' ' | awk -v id="$ID1" '$2 == id { print $3 }')
+              JOBSTATUS=$(alien.py ps -j ${ID1} 2>&1 | sed 's/^[[:space:]]*//' | tr -s ' ' | awk '{ print $3 }')
               echo "Current status is ${JOBSTATUS}"
               if [ -z "$JOBSTATUS" ]; then
                 echo "Warning: No job status found for job ID $ID1"
