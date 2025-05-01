@@ -3,3 +3,4 @@
 
 host=`hostname -a`
 echo "Hello world from ${host}"
+exit 1
