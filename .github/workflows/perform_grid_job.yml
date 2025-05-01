@@ -155,9 +155,9 @@ jobs:
              if [ "${THIS_STATUS}" == "DONE" ]; then
                let donecounter=donecounter+1
              else
-	             let failcounter=failcounter+1
-	           fi
-           
+               let failcounter=failcounter+1
+	     fi
+
            done
            if [[ donecounter > 0 ]]; then 
              exit 0
