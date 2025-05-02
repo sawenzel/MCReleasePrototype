@@ -95,7 +95,7 @@ jobs:
       # This step communicates the current job ID to other workflows by pushing a file to a dedicated branch
       - name: Upload marker file
         run: |
-          flag_file=alienproc_${{ steps.alien_submit.outputs.alien_job_url }}.flag
+          flag_file=alienproc_${{ steps.alien_submit.outputs.alien_job_id }}.flag
           echo "pending" > ${flag_file}
           echo "PR_NUMBER: ${{ github.event.pull_request.number }}" >> ${flag_file}
           git config --global user.email "bot@example.com"
