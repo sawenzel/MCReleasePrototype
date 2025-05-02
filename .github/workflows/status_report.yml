@@ -74,13 +74,5 @@ jobs:
           git rm -f "${{ github.event.inputs.job_file }}" || true
           git commit -m "Remove job marker"
           git push
-
-
-          git config --global user.email "bot@example.com"
-          git config --global user.name "bot"
-          # git clone --depth=1 --branch=poller-state https://x-access-token:${{ secrets.ACTIONS_BOT_TOKEN }}@github.com/${{ github.repository }} temp
-          # cd temp
-          rm -f "${JOB_FILE}"
-          git rm -f "${JOB_FILE}" || true
-          git commit -m "Remove job marker"
-          git push
+          cd ..
+          rm -rf temp
