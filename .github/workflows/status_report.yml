@@ -1,0 +1,86 @@
+name: Report summary about GRID job
+
+on:
+  workflow_dispatch:
+    inputs:
+      job_file:
+        description: "Flag file to remove"
+        required: true
+      pr:
+        description: "Pull request"
+        required: true
+      alien_job_id:
+        description: "Alien job id"
+        required: true
+
+jobs:
+  status-report:
+    runs-on: [self-hosted, alibi-cvmfs]
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Determine Alien Software Stack
+        id: software_setup
+        run: |
+           /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > alien_env.env
+           echo "alien_env_file=alien_env.env"
+                        
+      - name: Check job success
+        shell: bash
+        run: |
+           # We are now analysing failed/pass sub-jobs
+           # (this is also done in O2DPG grid submit; consider modularizing)
+           source alien_env.env
+           JOB_ID=${{ github.event.inputs.alien_job_id }}
+           SUBJOBIDS=()
+           SUBJOBSTATUSES=()
+           while [ "${#SUBJOBIDS[@]}" == "0" ]; do
+             QUERYRESULT=$(ALIENPY_JSON=true alien.py ps -a -m ${MY_JOBID})
+             SUBJOBIDS=($(echo ${QUERYRESULT} | jq -r '.results[].id' | tr '\n' ' '))
+             SUBJOBSTATUSES=($(echo ${QUERYRESULT} | jq -r '.results[].status' | tr '\n' ' '))
+             sleep 1
+           done
+           
+           LENGTH="${#SUBJOBIDS[@]}"
+           echo "Have ${LENGTH} subjobs"
+           donecounter=0
+           failcounter=0
+           for splitcounter in `seq 1 ${LENGTH}`; do
+             let jobindex=splitcounter-1
+             THIS_STATUS=${SUBJOBSTATUSES[jobindex]}
+             THIS_JOB=${SUBJOBIDS[jobindex]}
+             if [ "${THIS_STATUS}" == "DONE" ]; then
+               let donecounter=donecounter+1
+             else
+               let failcounter=failcounter+1
+             fi
+
+           done
+           if [[ donecounter > 0 ]]; then 
+             exit 0
+           fi
+           exit 1
+            
+      - name: Cleanup / Mark job as treated
+        run: |
+          git config --global user.email "bot@example.com"
+          git config --global user.name "bot"
+          git clone --depth=1 --branch=poller-state https://x-access-token:${{ secrets.ACTIONS_BOT_TOKEN }}@github.com/${{ github.repository }} temp
+          cd temp
+          rm -f "${{ github.event.inputs.job_file }}"
+          git rm -f "${{ github.event.inputs.job_file }}" || true
+          git commit -m "Remove job marker"
+          git push
+
+
+          git config --global user.email "bot@example.com"
+          git config --global user.name "bot"
+          # git clone --depth=1 --branch=poller-state https://x-access-token:${{ secrets.ACTIONS_BOT_TOKEN }}@github.com/${{ github.repository }} temp
+          # cd temp
+          rm -f "${JOB_FILE}"
+          git rm -f "${JOB_FILE}" || true
+          git commit -m "Remove job marker"
+          git push

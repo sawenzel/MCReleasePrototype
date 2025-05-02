@@ -4,7 +4,7 @@ name: ALIEN job status checker
 
 on:
   schedule:
-    - cron: '*/1 * * * *'  # Every 5 minutes (can this be configured?)
+    - cron: '*/5 * * * *'  # Every 5 minutes (can this be configured?)
   workflow_dispatch: # this allows button in github
 
 jobs:
@@ -13,8 +13,12 @@ jobs:
     steps:
       - name: Check for pending jobs
         run: |
-          git clone --depth=1 --branch=poller-state https://x-access-token:${{ secrets.ACTIONS_BOT_TOKEN }}@github.com/${{ github.repository }} temp
-          cd temp
+          TMPDIR=temp-$GITHUB_RUN_ID
+          if [ d "${TMPDIR}" ]; then
+            rm -rf ${TMPDIR}
+          fi
+          git clone --depth=1 --branch=poller-state https://x-access-token:${{ secrets.ACTIONS_BOT_TOKEN }}@github.com/${{ github.repository }} ${TMPDIR}
+          cd ${TMPDIR}
           JOB_FILE=$(ls *.flag 2>/dev/null | head -n1 || true)
 
           if [[ -z "$JOB_FILE" ]]; then
@@ -23,27 +27,30 @@ jobs:
           fi
 
           echo "Found job marker: $JOB_FILE"
-          # JOB_ID=$(echo "$JOB_FILE" | sed 's/[^0-9]//g')
+          JOB_ID=$(echo "$JOB_FILE" | sed 's/alienproc_//g' | sed 's/\.flag//')
           
+          PR_NUMER=$(grep "PR_NUMBER" ${JOB_FILE} | awk '{print $2}')
+
           # Dummy polling logic (replace with real job query)
-          # echo "Polling status for Job ID: $JOB_ID"
-          sleep 2
-          
-          git config --global user.email "bot@example.com"
-          git config --global user.name "bot"
-          # git clone --depth=1 --branch=poller-state https://x-access-token:${{ secrets.ACTIONS_BOT_TOKEN }}@github.com/${{ github.repository }} temp
-          # cd temp
-          rm -f "${JOB_FILE}"
-          git rm -f "${JOB_FILE}" || true
-          git commit -m "Remove job marker"
-          git push
+          echo "Polling status for Job ID: $JOB_ID ... tight to PR ${PR_NUMBER}"
 
-          # Simulate job completion
-          # echo "done" > done.flag
+          # source software needed for check
+          /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > alien_env.env
+          source alienv.env
 
-          # this activates the finalization workflow for the job just marked done
-          #curl -X POST \
-          #  -H "Authorization: Bearer ${{ secrets.ACTIONS_BOT_TOKEN }}" \
-          #  -H "Accept: application/vnd.github+json" \
-          #  https://api.github.com/repos/${{ github.repository }}/actions/workflows/C.yml/dispatches \
-          #  -d '{"ref":"main", "inputs": {"job_file": "'"$JOB_FILE"'"}}'
+          JOBSTATUS=$(alien.py ps -j ${JOB_ID} 2>&1 | sed 's/^[[:space:]]*//' | tr -s ' ' | awk '{ print $3 }')
+          echo "Current status is ${JOBSTATUS}"
+          if [ -z "$JOBSTATUS" ]; then
+            echo "Warning: No job status found for job ${JOB_ID}"
+          fi
+          if [[ "${JOBSTATUS}" == "D" ]]; then
+            echo "Job done"
+            # triggering finalization workflow
+            curl -X POST \
+              -H "Authorization: Bearer ${{ secrets.ACTIONS_BOT_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              https://api.github.com/repos/${{ github.repository }}/actions/workflows/status_report.yml/dispatches \
+              -d '{"ref":"main", "inputs": {"job_file": "'"$JOB_FILE"'", "alien_job_id" : "'"${JOB_UD}"'", "pr" : "'"${PR_NUMBER}"'"}}'
+          fi
+          cd ..
+          rm -rf ${TMPDIR}

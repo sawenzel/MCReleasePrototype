@@ -77,10 +77,7 @@ jobs:
         id: alien_submit
         run: |                        
            source alien_env.env
-           ALIEN_JOB_ID=$(echo deadbeef | sed 's/.*=//' | tr -cd '0-9')
-           echo "alien_job_id=${ALIEN_JOB_ID}" >> $GITHUB_OUTPUT
-           exit 0
-
+           
            RAW_OUTPUT=$(${O2DPG_ROOT}/GRID/utils/grid_submit.sh --script ${{ steps.check.outputs.new_files }} --ttl 600 --prodsplit 3 2> submit_log.txt)
            
            # parse the jobs URL and PROCESS ID
@@ -95,19 +92,27 @@ jobs:
            ALIEN_JOB_ID=$(echo ${JOB_URL} | sed 's/.*=//' | tr -cd '0-9')
            echo "alien_job_id=${ALIEN_JOB_ID}" >> $GITHUB_OUTPUT
            
-      # This step communicates the current job ID to other workflows by pushing a file to special branch
+      # This step communicates the current job ID to other workflows by pushing a file to a dedicated branch
       - name: Upload marker file
         run: |
-          flag_file = job_${{ steps.alien_submit.outputs.alien_job_url }}.flag
+          flag_file = alienproc_${{ steps.alien_submit.outputs.alien_job_url }}.flag
           echo "pending" > ${flag_file}
+          echo "PR_NUMBER: ${{ github.event.pull_request.number }}" >> ${flag_file}
           git config --global user.email "bot@example.com"
           git config --global user.name "bot"
-          git clone --depth=1 --branch=poller-state https://x-access-token:${{ secrets.ACTIONS_BOT_TOKEN }}@github.com/${{ github.repository }} temp
-          mv ${flag_file} temp/
-          cd temp
+
+          TMPDIR=temp-$GITHUB_RUN_ID
+          if [ d "${TMPDIR}" ]; then
+            rm -rf ${TMPDIR}
+          fi
+          git clone --depth=1 --branch=poller-state https://x-access-token:${{ secrets.ACTIONS_BOT_TOKEN }}@github.com/${{ github.repository }} ${TMPDIR}
+          mv ${flag_file} ${TMPDIR}/
+          cd ${TMPDIR}
           git add ${flag_file}.flag
           git commit -m "Add job marker"
           git push
+          cd ..
+          rm -rf ${TMPDIR}
       
       - name: Comment on PR
         if: github.event.pull_request # Only runs in PR context
@@ -123,61 +128,3 @@ jobs:
           #      -X POST \
           #      -d "$(jq -nc --arg body "$COMMENT" '{body: $body}')" \
           #      "https://api.github.com/repos/${REPO}/issues/${PR_NUMBER}/comments"
-             
-      - name: Wait job completion
-        id: wait_alien
-        shell: bash
-        run: |
-           source alien_env.env
-           JOB_ID=${{ steps.alien_submit.outputs.alien_job_id }}
-           echo "Waiting for job ${JOB_ID} to finish ..."
-           for i in {1..60}; do
-              JOBSTATUS=$(alien.py ps -j ${JOB_ID} 2>&1 | sed 's/^[[:space:]]*//' | tr -s ' ' | awk '{ print $3 }')
-              # echo "Current status is ${JOBSTATUS}"
-              if [ -z "$JOBSTATUS" ]; then
-                echo "Warning: No job status found for job ${JOB_ID}"
-              fi
-              if [[ "${JOBSTATUS}" == "D" ]]; then
-                echo "Job done"
-                exit 0
-              fi  
-              sleep 10
-           done
-           exit 1
-
-      - name: Check job success
-        shell: bash
-        run: |
-           # We are now analysing failed/pass sub-jobs
-           # (this is also done in O2DPG grid submit; consider modularizing)
-           source alien_env.env
-           JOB_ID=${{ steps.alien_submit.outputs.alien_job_id }}
-           SUBJOBIDS=()
-           SUBJOBSTATUSES=()
-           while [ "${#SUBJOBIDS[@]}" == "0" ]; do
-             QUERYRESULT=$(ALIENPY_JSON=true alien.py ps -a -m ${MY_JOBID})
-             SUBJOBIDS=($(echo ${QUERYRESULT} | jq -r '.results[].id' | tr '\n' ' '))
-             SUBJOBSTATUSES=($(echo ${QUERYRESULT} | jq -r '.results[].status' | tr '\n' ' '))
-             sleep 1
-           done
-           
-           LENGTH="${#SUBJOBIDS[@]}"
-           echo "Have ${LENGTH} subjobs"
-           donecounter=0
-           failcounter=0
-           for splitcounter in `seq 1 ${LENGTH}`; do
-             let jobindex=splitcounter-1
-             THIS_STATUS=${SUBJOBSTATUSES[jobindex]}
-             THIS_JOB=${SUBJOBIDS[jobindex]}
-             if [ "${THIS_STATUS}" == "DONE" ]; then
-               let donecounter=donecounter+1
-             else
-               let failcounter=failcounter+1
-             fi
-
-           done
-           if [[ donecounter > 0 ]]; then 
-             exit 0
-           fi
-           exit 1
-            
