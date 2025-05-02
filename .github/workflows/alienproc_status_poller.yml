@@ -1,0 +1,28 @@
+# dedicated poller workflow to check for status of alien jobs
+# runs on cron schedule; avoids sleeps and will not block github runners
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # Every 5 minutes (can this be configured?)
+  workflow_dispatch:
+
+jobs:
+  check-job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: [job-id, alien-software-env]
+      - name: Check job status
+        run: |
+          source alien-env.env
+          ID=$(cat job_id.txt)
+          STATUS=$(alien.py ps -j "$ID" | awk -v id="$ID" '$2 == id { print $3 }')
+          echo "Status: $STATUS"
+          if [ "$STATUS" = "D" ]; then
+            echo "✅ Job finished"
+            # optionally post comment or trigger next step
+          else
+            echo "⌛ Still running"
+            exit 78  # neutral failure
+          fi
