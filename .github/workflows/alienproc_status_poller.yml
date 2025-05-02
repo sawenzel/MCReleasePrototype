@@ -14,7 +14,7 @@ jobs:
       - name: Check for pending jobs
         run: |
           TMPDIR=temp-$GITHUB_RUN_ID
-          if [ d "${TMPDIR}" ]; then
+          if [ -d "${TMPDIR}" ]; then
             rm -rf ${TMPDIR}
           fi
           git clone --depth=1 --branch=poller-state https://x-access-token:${{ secrets.ACTIONS_BOT_TOKEN }}@github.com/${{ github.repository }} ${TMPDIR}
