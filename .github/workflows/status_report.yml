@@ -40,7 +40,7 @@ jobs:
            SUBJOBIDS=()
            SUBJOBSTATUSES=()
            while [ "${#SUBJOBIDS[@]}" == "0" ]; do
-             QUERYRESULT=$(ALIENPY_JSON=true alien.py ps -a -m ${MY_JOBID})
+             QUERYRESULT=$(ALIENPY_JSON=true alien.py ps -a -m ${JOB_ID})
              SUBJOBIDS=($(echo ${QUERYRESULT} | jq -r '.results[].id' | tr '\n' ' '))
              SUBJOBSTATUSES=($(echo ${QUERYRESULT} | jq -r '.results[].status' | tr '\n' ' '))
              sleep 1
