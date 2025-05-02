@@ -29,14 +29,14 @@ jobs:
           echo "Found job marker: $JOB_FILE"
           JOB_ID=$(echo "$JOB_FILE" | sed 's/alienproc_//g' | sed 's/\.flag//')
           
-          PR_NUMER=$(grep "PR_NUMBER" ${JOB_FILE} | awk '{print $2}')
+          PR_NUMBER=$(grep "PR_NUMBER" ${JOB_FILE} | awk '{print $2}')
 
           # Dummy polling logic (replace with real job query)
           echo "Polling status for Job ID: $JOB_ID ... tight to PR ${PR_NUMBER}"
 
           # source software needed for check
           /cvmfs/alice.cern.ch/bin/alienv printenv O2sim::v20250430-1 > alien_env.env
-          source alienv.env
+          source alien_env.env
 
           JOBSTATUS=$(alien.py ps -j ${JOB_ID} 2>&1 | sed 's/^[[:space:]]*//' | tr -s ' ' | awk '{ print $3 }')
           echo "Current status is ${JOBSTATUS}"
