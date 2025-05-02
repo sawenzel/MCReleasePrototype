@@ -131,7 +131,7 @@ jobs:
 
       - name: Apply label
         run: |
-          label="Running"
+          LABEL="Submitted"
           # Add the label to the PR
           curl -s -X POST \
             -H "Authorization: token ${{ secrets.ACTIONS_BOT_TOKEN }}" \

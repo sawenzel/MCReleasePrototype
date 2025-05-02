@@ -78,7 +78,7 @@ jobs:
 
       - name: Completed label
         run: |
-          label="Completed"
+          LABEL="Completed"
           # Add the label to the PR
           curl -s -X POST \
             -H "Authorization: token ${{ secrets.ACTIONS_BOT_TOKEN }}" \
