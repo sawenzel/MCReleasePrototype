@@ -136,9 +136,18 @@ jobs:
         run: |
           set -x
           LABEL="ALIEN_JOB:Submitted"
+          
+          #payload="'labels':['${LABEL}']"
+          #doesn't work:
+          #jq_payload=$(jq -nc --arg label "$LABEL" '{"labels": [$label]}')
+          #echo ${jq_payload}
+          payload="{'labels':['${LABEL}']}"
+          payload=$(echo "$payload" | sed "s/'/\"/g")
+          echo ${payload}
+
           # Add the label to the PR
           curl -s -X POST \
             -H "Authorization: token ${{ secrets.ACTIONS_BOT_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
             https://api.github.com/repos/${REPO}/issues/${PR_NUMBER}/labels \
-            -d "{'labels': ["'"$LABEL"'"]}"
+            -d "${payload}"
