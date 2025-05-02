@@ -95,7 +95,7 @@ jobs:
       # This step communicates the current job ID to other workflows by pushing a file to a dedicated branch
       - name: Upload marker file
         run: |
-          flag_file = alienproc_${{ steps.alien_submit.outputs.alien_job_url }}.flag
+          flag_file=alienproc_${{ steps.alien_submit.outputs.alien_job_url }}.flag
           echo "pending" > ${flag_file}
           echo "PR_NUMBER: ${{ github.event.pull_request.number }}" >> ${flag_file}
           git config --global user.email "bot@example.com"
@@ -108,7 +108,7 @@ jobs:
           git clone --depth=1 --branch=poller-state https://x-access-token:${{ secrets.ACTIONS_BOT_TOKEN }}@github.com/${{ github.repository }} ${TMPDIR}
           mv ${flag_file} ${TMPDIR}/
           cd ${TMPDIR}
-          git add ${flag_file}.flag
+          git add ${flag_file}
           git commit -m "Add job marker"
           git push
           cd ..
