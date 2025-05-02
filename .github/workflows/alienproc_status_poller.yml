@@ -3,26 +3,46 @@
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # Every 5 minutes (can this be configured?)
+    - cron: '*/1 * * * *'  # Every 5 minutes (can this be configured?)
   workflow_dispatch:
 
 jobs:
   check-job:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, alibi-cvmfs]
     steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: [job-id, alien-software-env]
-      - name: Check job status
+      - name: Check for pending jobs
         run: |
-          source alien-env.env
-          ID=$(cat job_id.txt)
-          STATUS=$(alien.py ps -j "$ID" | awk -v id="$ID" '$2 == id { print $3 }')
-          echo "Status: $STATUS"
-          if [ "$STATUS" = "D" ]; then
-            echo "✅ Job finished"
-            # optionally post comment or trigger next step
-          else
-            echo "⌛ Still running"
-            exit 78  # neutral failure
+          git clone --depth=1 --branch=poller-state https://x-access-token:${{ secrets.ACTIONS_BOT_TOKEN }}@github.com/${{ github.repository }} temp
+          cd temp
+          JOB_FILE=$(ls *.flag 2>/dev/null | head -n1 || true)
+
+          if [[ -z "$JOB_FILE" ]]; then
+            echo "No pending jobs found. Exiting."
+            exit 0
           fi
+
+          echo "Found job marker: $JOB_FILE"
+          # JOB_ID=$(echo "$JOB_FILE" | sed 's/[^0-9]//g')
+          
+          # Dummy polling logic (replace with real job query)
+          # echo "Polling status for Job ID: $JOB_ID"
+          sleep 2
+          
+          git config --global user.email "bot@example.com"
+          git config --global user.name "bot"
+          # git clone --depth=1 --branch=poller-state https://x-access-token:${{ secrets.ACTIONS_BOT_TOKEN }}@github.com/${{ github.repository }} temp
+          # cd temp
+          rm -f "${JOB_FILE}"
+          git rm -f "${JOB_FILE}" || true
+          git commit -m "Remove job marker"
+          git push
+
+          # Simulate job completion
+          # echo "done" > done.flag
+
+          # this activates the finalization workflow for the job just marked done
+          #curl -X POST \
+          #  -H "Authorization: Bearer ${{ secrets.ACTIONS_BOT_TOKEN }}" \
+          #  -H "Accept: application/vnd.github+json" \
+          #  https://api.github.com/repos/${{ github.repository }}/actions/workflows/C.yml/dispatches \
+          #  -d '{"ref":"main", "inputs": {"job_file": "'"$JOB_FILE"'"}}'

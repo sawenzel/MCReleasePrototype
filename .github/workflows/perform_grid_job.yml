@@ -75,9 +75,12 @@ jobs:
       
       - name: Submit job
         id: alien_submit
-        run: |                                          
+        run: |                        
            source alien_env.env
-           
+           ALIEN_JOB_ID=$(echo deadbeef | sed 's/.*=//' | tr -cd '0-9')
+           echo "alien_job_id=${ALIEN_JOB_ID}" >> $GITHUB_OUTPUT
+           exit 0
+
            RAW_OUTPUT=$(${O2DPG_ROOT}/GRID/utils/grid_submit.sh --script ${{ steps.check.outputs.new_files }} --ttl 600 --prodsplit 3 2> submit_log.txt)
            
            # parse the jobs URL and PROCESS ID
@@ -92,6 +95,20 @@ jobs:
            ALIEN_JOB_ID=$(echo ${JOB_URL} | sed 's/.*=//' | tr -cd '0-9')
            echo "alien_job_id=${ALIEN_JOB_ID}" >> $GITHUB_OUTPUT
            
+      # This step communicates the current job ID to other workflows by pushing a file to special branch
+      - name: Upload marker file
+        run: |
+          flag_file = job_${{ steps.alien_submit.outputs.alien_job_url }}.flag
+          echo "pending" > ${flag_file}
+          git config --global user.email "bot@example.com"
+          git config --global user.name "bot"
+          git clone --depth=1 --branch=poller-state https://x-access-token:${{ secrets.ACTIONS_BOT_TOKEN }}@github.com/${{ github.repository }} temp
+          mv ${flag_file} temp/
+          cd temp
+          git add ${flag_file}.flag
+          git commit -m "Add job marker"
+          git push
+      
       - name: Comment on PR
         if: github.event.pull_request # Only runs in PR context
         env:
