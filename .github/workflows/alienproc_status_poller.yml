@@ -1,5 +1,6 @@
 # dedicated poller workflow to check for status of alien jobs
 # runs on cron schedule; avoids sleeps and will not block github runners
+name: ALIEN job status checker
 
 on:
   schedule:
