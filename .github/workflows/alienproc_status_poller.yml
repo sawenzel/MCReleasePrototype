@@ -5,7 +5,7 @@ name: ALIEN job status checker
 on:
   schedule:
     - cron: '*/1 * * * *'  # Every 5 minutes (can this be configured?)
-  workflow_dispatch:
+#  workflow_dispatch:
 
 jobs:
   check-job:
