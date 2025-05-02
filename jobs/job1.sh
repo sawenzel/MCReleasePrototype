@@ -3,8 +3,8 @@
 
 host=`hostname -a`
 echo "Hello world from ${host}"
-if (( RANDOM % 2 == 0 )); then
-  echo "Exiting with status 1"
-  exit 1
-fi
+#if (( RANDOM % 2 == 0 )); then
+#  echo "Exiting with status 1"
+#  exit 1
+#fi
 exit 0
