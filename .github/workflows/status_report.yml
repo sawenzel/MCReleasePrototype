@@ -31,6 +31,8 @@ jobs:
       - name: Check job success
         shell: bash
         run: |
+           set +e
+           set -x
            # We are now analysing failed/pass sub-jobs
            # (this is also done in O2DPG grid submit; consider modularizing)
            source alien_env.env
