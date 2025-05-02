@@ -128,3 +128,13 @@ jobs:
           #      -X POST \
           #      -d "$(jq -nc --arg body "$COMMENT" '{body: $body}')" \
           #      "https://api.github.com/repos/${REPO}/issues/${PR_NUMBER}/comments"
+
+      - name: Apply label
+        run: |
+          label="Running"
+          # Add the label to the PR
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.ACTIONS_BOT_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${REPO}/issues/${PR_NUMBER}/labels \
+            -d "$(jq -nc --arg label "$LABEL" '{labels: [$label]}')"

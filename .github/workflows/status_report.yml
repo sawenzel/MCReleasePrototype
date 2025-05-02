@@ -31,8 +31,6 @@ jobs:
       - name: Check job success
         shell: bash
         run: |
-           set -x
-           set +e
            # We are now analysing failed/pass sub-jobs
            # (this is also done in O2DPG grid submit; consider modularizing)
            source alien_env.env
@@ -80,7 +78,7 @@ jobs:
 
       - name: Completed label
         run: |
-          label="Job completed"
+          label="Completed"
           # Add the label to the PR
           curl -s -X POST \
             -H "Authorization: token ${{ secrets.ACTIONS_BOT_TOKEN }}" \
