@@ -79,6 +79,9 @@ jobs:
           rm -rf temp
 
       - name: Completed label
+        env:
+          PR_NUMBER: ${{ github.event.inputs.pr }}
+          REPO: ${{ github.repository }}
         run: |
           LABEL="Completed"
           # Add the label to the PR
@@ -86,4 +89,4 @@ jobs:
             -H "Authorization: token ${{ secrets.ACTIONS_BOT_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
             https://api.github.com/repos/${REPO}/issues/${PR_NUMBER}/labels \
-            -d "$(jq -nc --arg label "$LABEL" '{labels: [$label]}')"
+            -d "'{labels: [$LABEL]}')"
