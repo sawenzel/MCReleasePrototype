@@ -1,0 +1,17 @@
+name: Jenkins Build Request
+description: Trigger a CVMFS Release
+title: "[BUILD] <insert-title>"
+labels: [build-request]
+body:
+  - type: textarea
+    id: json
+    attributes:
+      label: Build Parameters (JSON)
+      description: Paste valid JSON here
+      placeholder: |
+        {
+          "target": "myjob",
+          "release": "v1.2.3"
+        }
+    validations:
+      required: true
