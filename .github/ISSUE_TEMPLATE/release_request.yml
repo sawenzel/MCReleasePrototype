@@ -1,17 +1,34 @@
 name: Jenkins Build Request
-description: Trigger a CVMFS Release
-title: "[BUILD] <insert-title>"
+description: Submit a Jenkins job with parameters
+title: "[Build] "
 labels: [build-request]
+assignees: []
 body:
-  - type: textarea
-    id: json
+  - type: dropdown
+    id: job_type
     attributes:
-      label: Build Parameters (JSON)
-      description: Paste valid JSON here
-      placeholder: |
-        {
-          "target": "myjob",
-          "release": "v1.2.3"
-        }
+      label: Job Type
+      description: What type of job do you want to run?
+      options:
+        - Full Build
+        - Validation Only
+        - Custom Script
     validations:
       required: true
+
+  - type: textarea
+    id: parameters
+    attributes:
+      label: Build Parameters
+      description: Provide any custom parameters in JSON format
+      placeholder: |
+        {
+          "target": "ALICE",
+          "priority": "high",
+          "alidist-branch": "",
+          "alidist-tag": "",
+          "release-name": "",
+          "relval": "False"
+        }
+    validations:
+      required: false
