@@ -1,0 +1,55 @@
+name: CVMFS Release Query
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Every 30 minutes
+  workflow_dispatch: # this allows button in github
+
+jobs:
+  check-job:
+    runs-on: [self-hosted, alibi-cvmfs]
+    steps:
+      - name: CVFMS access check
+        run: |
+          # Checks if the package referenced in the job file exists
+          CVMFS_BASE_PATH="/cvmfs/alice.cern.ch/el9-x86_64/Packages/"
+          echo "Checking for presence of ${CVMFS_BASE_PATH}"
+          if [ -d "${CVMFS_BASE_PATH}" ]; then
+            echo "Found CVFMS"
+          else
+            echo "CMVFS not found"
+            exit 1
+          fi
+
+      - name: Find Async-release list
+        run: |
+          # This queries CVMFS for Packages matching a certain pattern.
+          # The list is then compared with a file in a special branch.
+          # The file is potentially updated.
+
+          TMPDIR=temp-$GITHUB_RUN_ID
+          if [ -d "${TMPDIR}" ]; then
+            rm -rf ${TMPDIR}
+          fi
+          git clone --depth=1 --branch=async-releases https://x-access-token:${{ secrets.ACTIONS_BOT_TOKEN }}@github.com/${{ github.repository }} ${TMPDIR}
+          
+          cd ${TMPDIR}
+          
+          RELEASE_FILE=async_release_database.txt
+          
+          CVMFS_BASE_PATH="/cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite"
+          find ${CVMFS_BASE_PATH} -wholename "*async*relocate-me.sh" &> found_packages.log
+
+          sort found_packages.log > ${RELEASE_FILE}
+          git add ${RELEASE_FILE}
+
+          # Only commit if there are changes staged
+          if ! git diff --cached --quiet; then
+             git commit -m "Update release file"
+             git push
+          else
+             echo "No changes to commit."
+          fi
+
+          cd ..
+          rm -rf ${TMPDIR}
