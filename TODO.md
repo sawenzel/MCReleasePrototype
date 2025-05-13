@@ -12,4 +12,5 @@ Tasks to be done
 
 Ideas:
 
-* Investigate integration with JupyterNotebooks and SWAN integration (for the compute). Could we do the QC analysis, plotting step as part of the notebook?
+* Investigate integration with JupyterNotebooks and SWAN,CERNBOX integration (for the compute). Could we do the QC analysis, plotting step as part of the notebook?
+* Google CoLab
