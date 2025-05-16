@@ -1,6 +1,9 @@
 #JDL_PACKAGE=O2sim::v20250430-1
 #JDL_OUTPUT=*@disk=1
 
+ls /cvmfs/
+ls /cvmfs/unpacked.cern.ch/
+
 host=`hostname -a`
 echo "Hello world from ${host}"
 #if (( RANDOM % 2 == 0 )); then
