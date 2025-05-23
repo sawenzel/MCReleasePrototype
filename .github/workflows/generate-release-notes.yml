@@ -8,21 +8,21 @@ on:
 
 jobs:
   generate:
-    runs-on: ubuntu-latest
-
+    runs-on: [self-hosted, alibi-cvmfs]
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Important for git history
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      #- name: Setup Python
+      #  uses: actions/setup-python@v5
+      #  with:
+      #    python-version: '3.11'
 
-      - name: Install dependencies
-        run: pip install requests PyGithub
+      #- name: Install dependencies
+      #  run: pip install requests PyGithub
 
       - name: Get release tag diff
         id: tags
