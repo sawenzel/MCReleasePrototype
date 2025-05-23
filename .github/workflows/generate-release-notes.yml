@@ -27,29 +27,29 @@ jobs:
       - name: Get release tag diff
         id: tags
         run: |
-          python workflow_scripts/get_release_tags.py release-tags.txt > tags.json
+          python3 workflow_scripts/get_release_tags.py release-tags.txt > tags.json
         shell: bash
 
       - name: Summarize tag changes
         id: diff_summary
         run: |
-          python workflow_scripts/parse_cvmfs_release_json.py tags.json
+          python3 workflow_scripts/parse_cvmfs_release_json.py tags.json
         shell: bash
 
       - name: Get commits across repos
         id: commits
         run: |
-          python scripts/get_commits.py tags.json > commits.json
+          python3 scripts/get_commits.py tags.json > commits.json
         shell: bash
 
       - name: Summarize commits with LLM
         id: summary
         run: |
-          python scripts/summarize_commits.py commits.json > summary.md
+          python3 scripts/summarize_commits.py commits.json > summary.md
         shell: bash
 
       - name: Comment PR with release notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python scripts/post_comment.py summary.md
+          python3 scripts/post_comment.py summary.md
