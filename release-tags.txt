@@ -1,0 +1,1 @@
+/cvmfs/alice.cern.cern/el9-x86_64/Packages/O2PDPSuite/MC-prod-2025-v1-1
