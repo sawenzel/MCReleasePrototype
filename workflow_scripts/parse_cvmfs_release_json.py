@@ -18,9 +18,13 @@ def extract_repos(release_json_path):
     return repos
 
 if __name__ == "__main__":
-    # ok, so here we extract the meta.json files for
-    # 2 given releases to then read the precise release specification
-
-    current = extract_repos(sys.argv[1])
-    previous = extract_repos(sys.argv[2])
+    # expects a JSON file with base and new tag
+    release_file = sys.argv[1]
+    release_tags = {}
+    with open(release_file) as fp:
+      release_tags = json.load(fp)
+    
+    print (release_tags)
+    current = extract_repos(release_tags["base_tag"] + '.meta.json')
+    previous = extract_repos(release_tags["new_tag"] + '.meta.json')
     print(json.dumps({"previous": previous, "current": current}))

@@ -33,7 +33,7 @@ jobs:
       - name: Summarize tag changes
         id: diff_summary
         run: |
-          python workflow_scripts/parse_cvmfs_release_json.py
+          python workflow_scripts/parse_cvmfs_release_json.py tags.json
         shell: bash
 
       - name: Get commits across repos
