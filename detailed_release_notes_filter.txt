@@ -1,0 +1,4 @@
+# this list defines repositories + folder used to extract
+# detailed release notes 
+O2
+O2DPG
