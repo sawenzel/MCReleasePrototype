@@ -8,48 +8,48 @@ on:
 
 jobs:
   generate:
-    runs-on: ubuntu-latest
-
+    runs-on: [self-hosted, alibi-cvmfs]
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Important for git history
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      #- name: Setup Python
+      #  uses: actions/setup-python@v5
+      #  with:
+      #    python-version: '3.11'
 
-      - name: Install dependencies
-        run: pip install requests PyGithub
+      #- name: Install dependencies
+      #  run: pip install requests PyGithub
 
       - name: Get release tag diff
         id: tags
         run: |
-          python workflow_scripts/get_release_tags.py release-tags.txt > tags.json
+          python3 workflow_scripts/get_release_tags.py release-tags.txt > tags.json
         shell: bash
 
       - name: Summarize tag changes
         id: diff_summary
         run: |
-          python workflow_scripts/parse_cvmfs_release_json.py tags.json
+          python3 workflow_scripts/parse_cvmfs_release_json.py tags.json
         shell: bash
 
       - name: Get commits across repos
         id: commits
         run: |
-          python scripts/get_commits.py tags.json > commits.json
+          python3 scripts/get_commits.py tags.json > commits.json
         shell: bash
 
       - name: Summarize commits with LLM
         id: summary
         run: |
-          python scripts/summarize_commits.py commits.json > summary.md
+          python3 scripts/summarize_commits.py commits.json > summary.md
         shell: bash
 
       - name: Comment PR with release notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python scripts/post_comment.py summary.md
+          python3 scripts/post_comment.py summary.md

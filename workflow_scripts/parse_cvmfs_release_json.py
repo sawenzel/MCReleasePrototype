@@ -25,6 +25,7 @@ if __name__ == "__main__":
       release_tags = json.load(fp)
     
     print (release_tags)
-    current = extract_repos(release_tags["base_tag"] + '.meta.json')
-    previous = extract_repos(release_tags["new_tag"] + '.meta.json')
+    current = extract_repos(release_tags["base_tag"] + '/.meta.json')
+    previous = extract_repos(release_tags["new_tag"] + '/.meta.json')
+
     print(json.dumps({"previous": previous, "current": current}))
