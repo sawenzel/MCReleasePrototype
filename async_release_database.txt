@@ -1,4 +1,5 @@
 /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-MC-prod-2025-v2-slc9-alidist-MC-prod-2025-v2-1/relocate-me.sh
+/cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-MC-prod-2025-v3-slc9-alidist-MC-prod-2025-v3-1/relocate-me.sh
 /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-async-2022-apass4-pp-mc.4d-slc9-alidist-async-2022-apass4-pp-mc.2-1/relocate-me.sh
 /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-async-2022-apass4-pp-mc.4d-slc9-alidist-async-2022-apass4-pp-mc.2-2/relocate-me.sh
 /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-async-2023-PbPb-apass5-v1-slc9-alidist-async-2023-PbPb-apass5-v1-1/relocate-me.sh
