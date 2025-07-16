@@ -39,6 +39,7 @@
 /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-async-20240229.pp.2a-slc9-alidist-O2PDPSuite-daily-20231208-0100-async1-3/relocate-me.sh
 /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-async-20240229.pp.2b-slc9-alidist-O2PDPSuite-daily-20231208-0100-async1-1/relocate-me.sh
 /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-async-20240229.pp.2c-slc9-alidist-O2PDPSuite-daily-20231208-0100-async1-1/relocate-me.sh
+/cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-async-2025-OO-apass1-v1-slc9-alidist-async-2025-OO-apass1-v1-1/relocate-me.sh
 /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-async-2025-pO-OO-apass1-v1-slc9-alidist-async-2025-pO-OO-apass1-v1-1/relocate-me.sh
 /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-async-2025-pO-OO-cpass0-v1-slc9-alidist-async-2025-pO-OO-cpass0-v1-1/relocate-me.sh
 /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-async-2025-pO-OO-cpass0-v2-slc9-alidist-async-2025-pO-OO-cpass0-v2-1/relocate-me.sh
@@ -124,3 +125,4 @@
 /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-epn-20250312.1-slc9-alidist-master-1/relocate-me.sh
 /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-epn-20250630-slc9-alidist-master-1/relocate-me.sh
 /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-epn-20250707-slc9-alidist-master-NERSC-1/relocate-me.sh
+/cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-epn-20250714-slc9-alidist-master-NERSC-1/relocate-me.sh
