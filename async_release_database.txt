@@ -126,3 +126,4 @@
 /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-epn-20250630-slc9-alidist-master-1/relocate-me.sh
 /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-epn-20250707-slc9-alidist-master-NERSC-1/relocate-me.sh
 /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-epn-20250714-slc9-alidist-master-NERSC-1/relocate-me.sh
+/cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite/async-epn-20250716-slc9-alidist-master-NERSC-1/relocate-me.sh
