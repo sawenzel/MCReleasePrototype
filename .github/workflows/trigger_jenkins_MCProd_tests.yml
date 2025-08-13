@@ -51,6 +51,16 @@ jobs:
         env: 
             JENKINS_URL : "https://alijenkins.cern.ch/job/Sandro_Playground/buildWithParameters?token=mysecrettoken123"
         run: |
+           # SSO_COOKIES_FILE is an environment variable available to
+           # the custom github-actions runner. It it is a file containing
+           # authentication cookies against the jenkins services. The file is generated
+           # by different means.
+         
+           if [ ! "${SSO_COOKIES_FILE}" ]; then
+              echo "Incomplete cookies setup in the github-runner. Cannot talk to Jenkins."
+              exit 1
+           fi
+
            RAW_RESPONSE=$(curl -s -i -L -k -b "$SSO_COOKIES_FILE" \
            -X GET \
            "${JENKINS_URL}&NUMBER=${{ steps.extract.outputs.number }}")
