@@ -10,18 +10,25 @@ jobs:
   o2dpg-2tag-testing:
     runs-on: self-hosted
     steps:
-      - name: Checkout PR code
+      - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Get all history for diffs
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }} --depth=1
 
       - name: Extract new release line and parse
         id: extract
         run: |
-          # Find the new line in releases.csv from the PR diff (lines starting with '+', excluding the diff header)
-          NEW_LINE=$(git diff origin/${{ github.base_ref }}...HEAD -- releases/MCProd_releases.csv | grep '^+' | grep -v '^+++' | sed 's/^+//')
+          BASE=origin/${{ github.base_ref }}
+
+          # Get only lines added in this PR to releases.csv
+          NEW_LINE=$(git diff $BASE...HEAD -- releases.csv \
+            | grep '^+' | grep -v '^+++' | sed 's/^+//')
 
           echo "Found new release line: $NEW_LINE"
 
-          # Split CSV into variables
           CANDIDATE_TAG=$(echo "$NEW_LINE" | cut -d',' -f1 | xargs)
           FINAL_TAG=$(echo "$NEW_LINE" | cut -d',' -f2 | xargs)
           COMMENT=$(echo "$NEW_LINE" | cut -d',' -f3- | xargs)
