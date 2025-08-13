@@ -1,4 +1,4 @@
-name: Trigger 2TAG testing on Jenkins
+name: Trigger 2tag testing on Jenkins
 
 on:
   pull_request:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout PR code
         uses: actions/checkout@v4
 
-      -name: Extract new release line and parse
+      - name: Extract new release line and parse
         id: extract
         run: |
           # Find the new line in releases.csv from the PR diff (lines starting with '+', excluding the diff header)
