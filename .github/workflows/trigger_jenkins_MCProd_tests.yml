@@ -1,0 +1,117 @@
+name: Trigger 2TAG testing on Jenkins
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'releases/MCProd_releases.csv'
+
+jobs:
+  o2dpg-2tag-testing:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+
+      -name: Extract new release line and parse
+        id: extract
+        run: |
+          # Find the new line in releases.csv from the PR diff (lines starting with '+', excluding the diff header)
+          NEW_LINE=$(git diff origin/${{ github.base_ref }}...HEAD -- releases/MCProd_releases.csv | grep '^+' | grep -v '^+++' | sed 's/^+//')
+
+          echo "Found new release line: $NEW_LINE"
+
+          # Split CSV into variables
+          CANDIDATE_TAG=$(echo "$NEW_LINE" | cut -d',' -f1 | xargs)
+          FINAL_TAG=$(echo "$NEW_LINE" | cut -d',' -f2 | xargs)
+          COMMENT=$(echo "$NEW_LINE" | cut -d',' -f3- | xargs)
+
+          echo "candidate_tag=$CANDIDATE_TAG" >> $GITHUB_ENV
+          echo "final_tag=$FINAL_TAG" >> $GITHUB_ENV
+          echo "comment=$COMMENT" >> $GITHUB_ENV
+
+      - name: Show extracted variables
+        run: |
+          echo "Candidate Tag: $candidate_tag"
+          echo "Final Tag: $final_tag"
+          echo "Comment: $comment"
+      
+      - name: Extract PARAM1 value
+        id: get_param
+        run: |
+          param1=$(jq -r '.PARAM1' "${{ steps.find_json.outputs.file }}")
+          if [[ "$param1" == "null" || -z "$param1" ]]; then
+            echo "❌ PARAM1 not found in JSON"
+            exit 1
+          fi
+          echo "param1=$param1" >> "$GITHUB_OUTPUT"
+          echo "param1=$param1"
+          
+      - name: Trigger Jenkins Job
+        id: trigger
+        env: 
+            JENKINS_URL : "https://alijenkins.cern.ch/job/Sandro_Playground2/buildWithParameters?token=mysecrettoken123"
+        run: |
+           RAW_RESPONSE=$(curl -s -i -L -k -b "$SSO_COOKIES_FILE" \
+           -X GET \
+           "${JENKINS_URL}&NUMBER=${{ steps.get_param.outputs.param1 }}")
+
+           # Extract all Location headers and look for the last one that looks like a Jenkins queue URL
+           QUEUE_URL=$(echo "$RAW_RESPONSE" | grep -i '^Location:' | awk '{print $2}' | grep '/queue/item/' | tail -n 1 | tr -d '\r\n')
+
+           if [[ -z "$QUEUE_URL" ]]; then
+              echo "❌ Failed: Could not extract valid Jenkins queue URL"
+              exit 1
+           fi
+
+           if [[ "$QUEUE_URL" != *"/item/"* ]]; then
+              echo "❌ Failed: Unexpected queue URL: $QUEUE_URL"
+              exit 1
+           fi
+           echo "QUEUE_URL=${QUEUE_URL}"
+           echo "QUEUE_URL=${QUEUE_URL}" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for Jenkins to assign a build number
+        id: wait_build
+        run: |
+          # curl -s -L -i -k -b "$SSO_COOKIES_FILE" ${{ steps.trigger.outputs.queue_url }}/api/json
+          FULL_QUEUE_URL="${{ steps.trigger.outputs.queue_url }}/api/json"
+          for i in {1..30}; do
+            echo "Step ${i}"
+            echo "curl -s -L -k -b $SSO_COOKIES_FILE $FULL_QUEUE_URL"
+            # Step 1: Fetch raw response
+            RAW_RESPONSE=$(curl -s -L -k -b "$SSO_COOKIES_FILE" "$FULL_QUEUE_URL")
+            
+            echo "${RAW_RESPONSE}"
+            BUILD_URL=$(echo "$RAW_RESPONSE" | jq -r '.executable.url // empty')
+            if [[ -n "$BUILD_URL" ]]; then
+              echo "Found build URL: $BUILD_URL"
+              echo "build_url=$BUILD_URL" >> "$GITHUB_OUTPUT"
+              echo "build_url=$BUILD_URL"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "❌ Timed out waiting for Jenkins to assign build number"
+          exit 1
+
+      - name: Wait for Jenkins build to complete
+        id: poll_result
+        run: |
+          echo "Polling Jenkins for build result..."
+          for i in {1..60}; do
+            RESULT=$(curl -s -L -k -b "$SSO_COOKIES_FILE" "${{ steps.wait_build.outputs.build_url }}/api/json" | jq -r '.result // empty')
+            if [[ -n "$RESULT" ]]; then
+              echo "Build result: $RESULT"
+              echo "result=$RESULT" >> "$GITHUB_OUTPUT"
+              if [[ "$RESULT" == "SUCCESS" ]]; then
+                exit 0
+              else
+                echo "❌ Jenkins build failed with status: $RESULT"
+                exit 1
+              fi
+            fi
+            sleep 10
+          done
+          echo "❌ Timed out waiting for Jenkins build result"
+          exit 1

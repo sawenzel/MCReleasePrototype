@@ -1,0 +1,7 @@
+#This list contains the list of MCProd software releases.
+#It should list the daily CVMFS tag from which to make the official tag, the name of
+#the tag to create, and optionally a comment within quotes. It follows csv format.
+#The daily tag is a release candidate already on CVMFS.
+#
+#daily-tag,release-tag,comment
+O2DPGSuite::daily-20250806-0000-1, O2PDPSuite::MC-prod-2025-v9-1, ""
