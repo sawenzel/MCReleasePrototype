@@ -35,16 +35,9 @@ jobs:
           FINAL_TAG=$(echo "$NEW_LINE" | cut -d',' -f2 | xargs)
           COMMENT=$(echo "$NEW_LINE" | cut -d',' -f3- | xargs)
 
-          echo "candidate_tag=$CANDIDATE_TAG" >> $GITHUB_ENV
-          echo "final_tag=$FINAL_TAG" >> $GITHUB_ENV
-          echo "comment=$COMMENT" >> $GITHUB_ENV
-          echo "number=22" >> $GITHUB_ENV
-
-      - name: Show extracted variables
-        run: |
-          echo "Candidate Tag: $candidate_tag"
-          echo "Final Tag: $final_tag"
-          echo "Comment: $comment"
+          echo "candidate_tag=$CANDIDATE_TAG" >> $GITHUB_OUTPUT
+          echo "final_tag=$FINAL_TAG" >> $GITHUB_OUTPUT
+          echo "comment=$COMMENT" >> $GITHUB_OUTPUT
       
       - name: Trigger Jenkins Job
         id: trigger
