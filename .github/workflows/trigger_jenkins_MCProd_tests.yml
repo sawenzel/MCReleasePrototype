@@ -49,7 +49,8 @@ jobs:
       - name: Trigger Jenkins Job
         id: trigger
         env: 
-            JENKINS_URL : "https://alijenkins.cern.ch/job/Sandro_Playground/buildWithParameters?token=mysecrettoken123"
+            JENKINS_URL : "https://alijenkins.cern.ch/job/O2DPG-2TAG-TESTING/buildWithParameters"
+            # JENKINS_URL : "https://alijenkins.cern.ch/job/Sandro_Playground/buildWithParameters?token=mysecrettoken123"
             SSO_COOKIES_FILE : ${{ secrets.sso_cookies_path }}
         run: |
            # SSO_COOKIES_PATH is a file containing
@@ -63,7 +64,7 @@ jobs:
 
            RAW_RESPONSE=$(curl -s -i -L -k -b "${{ secrets.sso_cookies_path }}" \
            -X GET \
-           "${JENKINS_URL}&NUMBER=${{ steps.extract.outputs.number }}")
+           "${JENKINS_URL}&MC_2STAGE_TEST_TAG=${{ steps.extract.outputs.candidate_tag }}")
 
            # Extract all Location headers and look for the last one that looks like a Jenkins queue URL
            QUEUE_URL=$(echo "$RAW_RESPONSE" | grep -i '^Location:' | awk '{print $2}' | grep '/queue/item/' | tail -n 1 | tr -d '\r\n')
