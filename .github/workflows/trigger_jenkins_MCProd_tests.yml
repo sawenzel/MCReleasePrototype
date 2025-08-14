@@ -112,7 +112,7 @@ jobs:
           SSO_COOKIES_FILE : ${{ secrets.sso_cookies_path }}
         run: |
           echo "Polling Jenkins for build result..."
-          for i in {1..60}; do
+          for i in {1..240}; do
             RESULT=$(curl -s -L -k -b "$SSO_COOKIES_FILE" "${{ steps.wait_build.outputs.build_url }}/api/json" | jq -r '.result // empty')
             if [[ -n "$RESULT" ]]; then
               echo "Build result: $RESULT"
@@ -124,7 +124,7 @@ jobs:
                 exit 1
               fi
             fi
-            sleep 10
+            sleep 60
           done
           echo "❌ Timed out waiting for Jenkins build result"
           exit 1
