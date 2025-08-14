@@ -48,9 +48,8 @@ jobs:
       
       - name: Trigger Jenkins Job
         id: trigger
-        env: 
-            BUILD_TOKEN : ${{ secrets.jenkins_build_token }}
-            JENKINS_URL : "https://alijenkins.cern.ch/job/O2DPG-2TAG-TESTING/buildWithParameters?token=${BUILD_TOKEN}"
+        env:
+            JENKINS_URL : "https://alijenkins.cern.ch/job/O2DPG-2TAG-TESTING/buildWithParameters?token=${{ secrets.jenkins_build_token }}"
             SSO_COOKIES_FILE : ${{ secrets.sso_cookies_path }}
         run: |
            # SSO_COOKIES_PATH is a file containing
