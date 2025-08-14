@@ -38,7 +38,7 @@ jobs:
           echo "candidate_tag=$CANDIDATE_TAG" >> $GITHUB_ENV
           echo "final_tag=$FINAL_TAG" >> $GITHUB_ENV
           echo "comment=$COMMENT" >> $GITHUB_ENV
-          echo "number=10" >> $GITHUB_ENV
+          echo "number=22" >> $GITHUB_ENV
 
       - name: Show extracted variables
         run: |
@@ -61,7 +61,7 @@ jobs:
               exit 1
            fi
 
-           RAW_RESPONSE=$(curl -s -i -L -k -b "$SSO_COOKIES_FILE" \
+           RAW_RESPONSE=$(curl -s -i -L -k -b "${{ secrets.sso_cookies_path }}" \
            -X GET \
            "${JENKINS_URL}&NUMBER=${{ steps.extract.outputs.number }}")
 
@@ -82,6 +82,8 @@ jobs:
 
       - name: Wait for Jenkins to assign a build number
         id: wait_build
+        env:
+          SSO_COOKIES_FILE : ${{ secrets.sso_cookies_path }}
         run: |
           # curl -s -L -i -k -b "$SSO_COOKIES_FILE" ${{ steps.trigger.outputs.queue_url }}/api/json
           FULL_QUEUE_URL="${{ steps.trigger.outputs.queue_url }}/api/json"
@@ -106,6 +108,8 @@ jobs:
 
       - name: Wait for Jenkins build to complete
         id: poll_result
+        env: 
+          SSO_COOKIES_FILE : ${{ secrets.sso_cookies_path }}
         run: |
           echo "Polling Jenkins for build result..."
           for i in {1..60}; do
