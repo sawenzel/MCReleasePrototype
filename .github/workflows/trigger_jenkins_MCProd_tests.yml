@@ -39,6 +39,31 @@ jobs:
           echo "final_tag=$FINAL_TAG" >> $GITHUB_OUTPUT
           echo "comment=$COMMENT" >> $GITHUB_OUTPUT
       
+      - name: CVFMS access check
+        run: |
+          # Checks if the package referenced as candidate_tag actually exists
+          CVMFS_BASE_PATH="/cvmfs/alice.cern.ch/el9-x86_64/Packages/"
+          echo "Checking for presence of ${CVMFS_BASE_PATH}"
+          if [ -d "${CVMFS_BASE_PATH}" ]; then
+            echo "Found CVFMS"
+          else
+            echo "CMVFS not found"
+            # exit 1
+          fi
+
+      - name: CVFMS package check
+        run: |
+          # Checks if the package referenced as candidate_tag actually exists
+          CVMFS_BASE_PATH="/cvmfs/alice.cern.ch/el9-x86_64/Packages/"
+          echo "Checking for presence of ${CVMFS_BASE_PATH}"
+          CAND_PACKAGE=${{ steps.extract.output.candidate_tag }}
+          if [ -d "${CVMFS_BASE_PATH}/${CAND_PACKAGE}" ]; then
+            echo "Found candidate package ${CAND_PACKAGE} on CVFMS"
+          else
+            echo "${CAND_PACKAGE} not found on CMVFS"
+            # exit 1
+          fi
+
       - name: Trigger Jenkins Job
         id: trigger
         env:
