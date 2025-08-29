@@ -28,12 +28,12 @@ jobs:
           collector_script=workflow_scripts/lpmtype_jobinfo_collector.py
           
           # Query multiple lpmtypes (example: 27506, 27507)
-          python ${collector_script} --lpmtype 27506 --output data/jobs_27506.json
-          python ${collector_script} --lpmtype 27507 --output data/jobs_27507.json
+          python3 ${collector_script} --lpmtype 27506 --output data/jobs_27506.json
+          python3 ${collector_script} --lpmtype 27507 --output data/jobs_27507.json
 
       - name: Merge JSONs
         run: |
-          python workflow_scripts/lpmtype_jobinfo_merger.py data/jobs*.json --output data/merged.json
+          python3 workflow_scripts/lpmtype_jobinfo_merger.py data/jobs*.json --output data/merged.json
 
       - name: Commit and push results
         run: |
