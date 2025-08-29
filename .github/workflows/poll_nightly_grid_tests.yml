@@ -35,9 +35,12 @@ jobs:
           python3 workflow_scripts/lpmtype_jobinfo_merger.py data/jobs*.json --output data/merged.json
 
       - name: Commit and push results
+        env:
+          ACTIONS_BOT_TOKEN: ${{ secrets.ACTIONS_BOT_TOKEN }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "actions-bot"
+          git config user.email "actions-bot@users.noreply.github.com"
           git add data/merged.json
           git commit -m "Update merged jobs.json [ci skip]" || echo "No changes to commit"
-          git push
+          git remote set-url origin https://x-access-token:${ACTIONS_BOT_TOKEN}@github.com/${{ github.repository }}
+          git push origin HEAD:${{ github.ref }}
