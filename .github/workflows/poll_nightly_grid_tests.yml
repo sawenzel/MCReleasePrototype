@@ -1,0 +1,44 @@
+name: Nightly-MC status collector
+
+on:
+  schedule:
+    - cron: "0 12 * * *"   # run daily at 12:00 UTC
+  workflow_dispatch:       # allow manual trigger
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Run job collectors
+        run: |
+          mkdir -p data
+          collector_script=workflow_scripts/lpmtype_jobinfo_collector.py
+          
+          # Query multiple lpmtypes (example: 27506, 12345, 67890)
+          python ${collector_script} --lpmtype 27506 --output data/jobs_27506.json
+          python ${collector_script} --lpmtype 12345 --output data/jobs_12345.json
+          python ${collector_script} --lpmtype 67890 --output data/jobs_67890.json
+
+      - name: Merge JSONs
+        run: |
+          python merge_jobs.py data/*.json --output data/merged.json
+
+      - name: Commit and push results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/merged.json
+          git commit -m "Update merged jobs.json [ci skip]" || echo "No changes to commit"
+          git push
