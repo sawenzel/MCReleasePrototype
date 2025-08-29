@@ -33,6 +33,8 @@ jobs:
         run: |
           source .venv/bin/activate
           python3 workflow_scripts/lpmtype_jobinfo_merger.py data/jobs*.json --output data/merged.json
+          jq '' data/merged.json
+          cat data/merged.json
 
       - name: Commit and push results
         env:
