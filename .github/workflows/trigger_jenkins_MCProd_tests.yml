@@ -55,7 +55,7 @@ jobs:
         run: |
           # Checks if the package referenced as candidate_tag actually exists
           CVMFS_BASE_PATH="/cvmfs/alice.cern.ch/el9-x86_64/Packages/"
-          CAND_PACKAGE=${{ steps.extract.output.candidate_tag }}
+          CAND_PACKAGE=${{ steps.extract.outputs.candidate_tag }}
           echo "Checking for presence of ${CVMFS_BASE_PATH}/${CAND_PACKAGE}"
           if [ -d "${CVMFS_BASE_PATH}/${CAND_PACKAGE}" ]; then
             echo "Found candidate package ${CAND_PACKAGE} on CVFMS"
