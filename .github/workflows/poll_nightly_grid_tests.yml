@@ -26,14 +26,13 @@ jobs:
           mkdir -p data
           collector_script=workflow_scripts/lpmtype_jobinfo_collector.py
           
-          # Query multiple lpmtypes (example: 27506, 12345, 67890)
+          # Query multiple lpmtypes (example: 27506, 27507)
           python ${collector_script} --lpmtype 27506 --output data/jobs_27506.json
-          python ${collector_script} --lpmtype 12345 --output data/jobs_12345.json
-          python ${collector_script} --lpmtype 67890 --output data/jobs_67890.json
+          python ${collector_script} --lpmtype 27507 --output data/jobs_27507.json
 
       - name: Merge JSONs
         run: |
-          python merge_jobs.py data/*.json --output data/merged.json
+          python workflow_scripts/lpmtype_jobinfo_merger.py data/jobs*.json --output data/merged.json
 
       - name: Commit and push results
         run: |
