@@ -3,19 +3,17 @@ import argparse
 import os
 
 def main():
-    parser = argparse.ArgumentParser(description="Merge job JSONs by SoftwarePackage")
-    parser.add_argument("inputs", nargs="+", help="Input job JSON files")
-    parser.add_argument("--existing", default="data/merged.json",
-                        help="Path to existing merged JSON file (if any)")
-    parser.add_argument("--output", default="data/merged.json",
-                        help="Output merged JSON file")
+    parser = argparse.ArgumentParser(description="Merge job JSONs by SoftwarePackage (per lpmtype)")
+    parser.add_argument("inputs", nargs="+", help="Input job JSON files (from extract_jobs.py)")
+    parser.add_argument("--output", required=True,
+                        help="Path to output merged JSON file (e.g. data/merged_27506.json)")
     args = parser.parse_args()
 
     merged = {}
 
-    # Load existing file if present
-    if os.path.exists(args.existing):
-        with open(args.existing, "r", encoding="utf-8") as f:
+    # If output already exists, load it first
+    if os.path.exists(args.output):
+        with open(args.output, "r", encoding="utf-8") as f:
             try:
                 existing_jobs = json.load(f)
                 for job in existing_jobs:
@@ -23,9 +21,9 @@ def main():
                     if spkg:
                         merged[spkg] = job
             except json.JSONDecodeError:
-                print(f"Warning: {args.existing} is not valid JSON, ignoring it.")
+                print(f"Warning: {args.output} is not valid JSON, ignoring it.")
 
-    # Merge new inputs (overwrite fields if SoftwarePackage already exists)
+    # Merge all new inputs
     for infile in args.inputs:
         with open(infile, "r", encoding="utf-8") as f:
             jobs = json.load(f)
@@ -36,6 +34,7 @@ def main():
                 if spkg not in merged:
                     merged[spkg] = job
                 else:
+                    # Overwrite fields with latest data
                     merged[spkg].update(job)
 
     # Save result
