@@ -29,8 +29,8 @@ jobs:
           collector_script=workflow_scripts/lpmtype_jobinfo_collector.py
           
           # Query multiple lpmtypes (example: 27506, 27507)
-          python3 ${collector_script} --lpmtype 27506 --output data/jobs_27506.json
-          python3 ${collector_script} --lpmtype 27507 --output data/jobs_27507.json
+          python3 ${collector_script} --lpmtype 27506 --output o2sim_nightlies_status/jobs_27506.json
+          python3 ${collector_script} --lpmtype 27507 --output o2sim_nightlies_status/jobs_27507.json
 
       # should get the merged datasets
       - name: Fetch existing branch
@@ -46,8 +46,8 @@ jobs:
         run: |
           source .venv/bin/activate
           
-          python3 workflow_scripts/lpmtype_jobinfo_merger.py data/jobs_27506.json --output data/merged_27506.json
-          python3 workflow_scripts/lpmtype_jobinfo_merger.py data/jobs_27507.json --output data/merged_27507.json
+          python3 workflow_scripts/lpmtype_jobinfo_merger.py o2sim_nightlies_status/jobs_27506.json --output o2sim_nightlies_status/merged_27506.json
+          python3 workflow_scripts/lpmtype_jobinfo_merger.py o2sim_nightlies_status/jobs_27507.json --output o2sim_nightlies_status/merged_27507.json
   
           jq '' data/merged_27506.json
           jq '' data/merged_27507.json
@@ -55,6 +55,8 @@ jobs:
       - name: Commit and push results
         run: |
           # stage and commit changes
-          git add data/merged*.json
+          git add o2sim_nightlies_status/merged*.json
           git commit -m "Update nightly job status" || echo "No changes to commit"
-          git push origin HEAD:${{ github.ref }}
+          BRANCH="O2sim-nightly-status"
+          # git push origin HEAD:${{ github.ref }}
+          git push --set-upstream origin $BRANCH
