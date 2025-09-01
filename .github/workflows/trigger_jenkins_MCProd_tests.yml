@@ -84,19 +84,19 @@ jobs:
           EOF
           python3 
 
-        # checks if the usual nightly tests for this O2sim are ok
-        CVMFS_BASE_PATH="/cvmfs/alice.cern.ch/el9-x86_64/Packages/"
-        CAND_PACKAGE=${{ steps.extract.outputs.candidate_tag }}
-        # strip prefix before @ (if any)
-        CAND_PACKAGE="${CAND_PACKAGE#*@}"
+          # checks if the usual nightly tests for this O2sim are ok
+          CVMFS_BASE_PATH="/cvmfs/alice.cern.ch/el9-x86_64/Packages/"
+          CAND_PACKAGE=${{ steps.extract.outputs.candidate_tag }}
+          # strip prefix before @ (if any)
+          CAND_PACKAGE="${CAND_PACKAGE#*@}"
 
-        # replace :: with /
-        CAND_PACKAGE="${CAND_PACKAGE//:://}"
-        modulefile="${CMVFS_BASE_PATH}/${CAND_PACKAGE}/etc/modulefiles/O2PDPSuite"
+          # replace :: with /
+          CAND_PACKAGE="${CAND_PACKAGE//:://}"
+          modulefile="${CMVFS_BASE_PATH}/${CAND_PACKAGE}/etc/modulefiles/O2PDPSuite"
 
-        O2SIM_PACKAGE=$(python3 o2sim_extractor.py ${modulefile})
-        echo "Extracted O2sim package ${O2SIM_PACKAGE}"
-        exit 1
+          O2SIM_PACKAGE=$(python3 o2sim_extractor.py ${modulefile})
+          echo "Extracted O2sim package ${O2SIM_PACKAGE}"
+          exit 1
 
       - name: Trigger Jenkins Job
         id: trigger
