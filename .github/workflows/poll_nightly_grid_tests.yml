@@ -5,6 +5,9 @@ on:
     - cron: "0 12 * * *"   # run daily at 12:00 UTC
   workflow_dispatch:       # allow manual trigger
 
+permissions:
+  contents: write # allow push 
+
 jobs:
   collect:
     runs-on: [self-hosted, cern-sso]
@@ -29,20 +32,29 @@ jobs:
           python3 ${collector_script} --lpmtype 27506 --output data/jobs_27506.json
           python3 ${collector_script} --lpmtype 27507 --output data/jobs_27507.json
 
-      - name: Merge JSONs
-        run: |
-          source .venv/bin/activate
-          python3 workflow_scripts/lpmtype_jobinfo_merger.py data/jobs*.json --output data/merged.json
-          jq '' data/merged.json
-          cat data/merged.json
-
-      - name: Commit and push results
-        env:
-          ACTIONS_BOT_TOKEN: ${{ secrets.ACTIONS_BOT_TOKEN }}
+      # should get the merged datasets
+      - name: Fetch existing branch
         run: |
           git config user.name "actions-bot"
           git config user.email "actions-bot@users.noreply.github.com"
-          git add data/merged.json
-          git commit -m "Update merged jobs.json [ci skip]" || echo "No changes to commit"
-          git remote set-url origin https://x-access-token:${ACTIONS_BOT_TOKEN}@github.com/${{ github.repository }}
+
+          BRANCH="O2sim-nightly-status"
+          git fetch origin $BRANCH || true
+          git checkout -B $BRANCH origin/$BRANCH || git checkout -B $BRANCH
+      
+      - name: Merge JSONs
+        run: |
+          source .venv/bin/activate
+          
+          python3 workflow_scripts/lpmtype_jobinfo_merger.py data/jobs_27506.json --output data/merged_27506.json
+          python3 workflow_scripts/lpmtype_jobinfo_merger.py data/jobs_27507.json --output data/merged_27507.json
+  
+          jq '' data/merged_27506.json
+          jq '' data/merged_27507.json
+          
+      - name: Commit and push results
+        run: |
+          # stage and commit changes
+          git add data/merged*.json
+          git commit -m "Update nightly job status" || echo "No changes to commit"
           git push origin HEAD:${{ github.ref }}
