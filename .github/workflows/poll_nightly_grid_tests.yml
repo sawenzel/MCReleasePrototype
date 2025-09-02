@@ -33,6 +33,9 @@ jobs:
           # Query multiple lpmtypes (example: 27506, 27507)
           python3 ${collector_script} --lpmtype 27506 --output o2sim_nightlies_status/jobs_27506.json
           python3 ${collector_script} --lpmtype 27507 --output o2sim_nightlies_status/jobs_27507.json
+          # nightly anchored PbPb
+          python3 ${collector_script} --lpmtype 30350 --output o2sim_nightlies_status/jobs_30350.json
+
 
       # should get the merged datasets
       - name: Fetch existing branch
@@ -50,6 +53,7 @@ jobs:
 
           python3 workflow_scripts/lpmtype_jobinfo_merger.py o2sim_nightlies_status/jobs_27506.json --output o2sim_nightlies_status/merged_27506.json
           python3 workflow_scripts/lpmtype_jobinfo_merger.py o2sim_nightlies_status/jobs_27507.json --output o2sim_nightlies_status/merged_27507.json
+          python3 workflow_scripts/lpmtype_jobinfo_merger.py o2sim_nightlies_status/jobs_30350.json --output o2sim_nightlies_status/merged_30350.json
   
           jq '' data/merged_27506.json
           jq '' data/merged_27507.json
