@@ -73,12 +73,13 @@ jobs:
 
       - name: O2sim package extraction and nightlies check
         # extracts the O2sim package name from the provided candidate tag
+        id: o2simextract
         run: |
           cat > o2sim_extractor.py <<EOF
           import re
           import sys
           s = sys.stdin.read()
-          match = re.search(r"\bO2sim/(\S+)", s)
+          match = re.search(r"\b(O2sim/\S+)", s)
           if match:
              print(match.group(1))
           EOF
@@ -97,6 +98,20 @@ jobs:
 
           O2SIM_PACKAGE=$(cat ${modulefile} | python3 o2sim_extractor.py)
           echo "Extracted O2sim package ${O2SIM_PACKAGE}"
+          echo "o2sim_candidate_tag=$O2SIM_PACKAGE" >> $GITHUB_OUTPUT
+     
+      - name: Check O2sim GRID nightlies
+        run: |
+          # This verifies that the package is tested ok within the O2sim nightlies
+          # The status data is provided by another workflow, which saves it into dedicated data files
+
+          # we need to checkout the files
+          git checkout O2sim-nightly-status
+          
+          # we need to loop over all files and see if the package has a good status
+          python3 checktag_against_nightlies.py --software ${steps.o2simextract.outputs.o2sim_candidate_tag} --datadir o2sim_nightlies_status
+
+          # we
           exit 1
 
       - name: Trigger Jenkins Job
