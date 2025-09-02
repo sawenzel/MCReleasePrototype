@@ -28,6 +28,8 @@ jobs:
           mkdir -p data
           collector_script=workflow_scripts/lpmtype_jobinfo_collector.py
           
+          mkdir -p o2sim_nightlies_status || " dir exists already "
+          
           # Query multiple lpmtypes (example: 27506, 27507)
           python3 ${collector_script} --lpmtype 27506 --output o2sim_nightlies_status/jobs_27506.json
           python3 ${collector_script} --lpmtype 27507 --output o2sim_nightlies_status/jobs_27507.json
@@ -46,8 +48,6 @@ jobs:
         run: |
           source .venv/bin/activate
 
-          mkdir -p o2sim_nightlies_status || " dir exists already "
-          
           python3 workflow_scripts/lpmtype_jobinfo_merger.py o2sim_nightlies_status/jobs_27506.json --output o2sim_nightlies_status/merged_27506.json
           python3 workflow_scripts/lpmtype_jobinfo_merger.py o2sim_nightlies_status/jobs_27507.json --output o2sim_nightlies_status/merged_27507.json
   
