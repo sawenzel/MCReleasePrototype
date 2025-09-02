@@ -77,7 +77,7 @@ jobs:
           cat > o2sim_extractor.py <<EOF
           import re
           import sys
-          s = sys.argv[1]
+          s = sys.stdin.read()
           match = re.search(r"\bO2sim/(\S+)", s)
           if match:
              print(match.group(1))
@@ -95,7 +95,7 @@ jobs:
           echo "Checking modulefile ${modulefile}"
           cat "${modulefile}"
 
-          O2SIM_PACKAGE=$(python3 o2sim_extractor.py ${modulefile})
+          O2SIM_PACKAGE=$(cat ${modulefile} | python3 o2sim_extractor.py)
           echo "Extracted O2sim package ${O2SIM_PACKAGE}"
           exit 1
 
