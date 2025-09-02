@@ -76,7 +76,8 @@ jobs:
         run: |
           cat > o2sim_extractor.py <<EOF
           import re
-          s = argv[1]
+          import sys
+          s = sys.argv[1]
           match = re.search(r"\bO2sim/(\S+)", s)
           if match:
              print(match.group(1))
