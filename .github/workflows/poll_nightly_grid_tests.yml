@@ -45,6 +45,8 @@ jobs:
       - name: Merge JSONs
         run: |
           source .venv/bin/activate
+
+          mkdir -p o2sim_nightlies_status || " dir exists already "
           
           python3 workflow_scripts/lpmtype_jobinfo_merger.py o2sim_nightlies_status/jobs_27506.json --output o2sim_nightlies_status/merged_27506.json
           python3 workflow_scripts/lpmtype_jobinfo_merger.py o2sim_nightlies_status/jobs_27507.json --output o2sim_nightlies_status/merged_27507.json
