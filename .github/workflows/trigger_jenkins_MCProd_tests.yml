@@ -92,6 +92,8 @@ jobs:
           # replace :: with /
           CAND_PACKAGE="${CAND_PACKAGE//:://}"
           modulefile="${CMVFS_BASE_PATH}/${CAND_PACKAGE}/etc/modulefiles/O2PDPSuite"
+          echo "Checking modulefile ${modulefile}"
+          cat "${modulefile}"
 
           O2SIM_PACKAGE=$(python3 o2sim_extractor.py ${modulefile})
           echo "Extracted O2sim package ${O2SIM_PACKAGE}"
