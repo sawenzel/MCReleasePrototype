@@ -69,7 +69,6 @@ jobs:
             echo "${CAND_PACKAGE} not found on CMVFS"
             exit 1
           fi
-          exit 1
           
 
       - name: O2sim package extraction and nightlies check
