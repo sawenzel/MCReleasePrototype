@@ -75,14 +75,13 @@ jobs:
         # extracts the O2sim package name from the provided candidate tag
         run: |
           cat > o2sim_extractor.py <<EOF
-            import re
-            s = argv[1]
-            match = re.search(r"\bO2sim/(\S+)", s)
-            if match:
-               print(match.group(1))
+          import re
+          s = argv[1]
+          match = re.search(r"\bO2sim/(\S+)", s)
+          if match:
+             print(match.group(1))
           EOF
-          python3 
-
+          
           # checks if the usual nightly tests for this O2sim are ok
           CVMFS_BASE_PATH="/cvmfs/alice.cern.ch/el9-x86_64/Packages/"
           CAND_PACKAGE=${{ steps.extract.outputs.candidate_tag }}
