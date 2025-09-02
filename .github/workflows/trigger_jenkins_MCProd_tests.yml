@@ -98,7 +98,7 @@ jobs:
 
           O2SIM_PACKAGE=$(cat ${modulefile} | python3 o2sim_extractor.py)
           # replace / with ::
-          O2SIM_PACKAGE="${O2SIM_PACKAGE///::/}"
+          O2SIM_PACKAGE="${O2SIM_PACKAGE//\//::}"
           echo "Extracted O2sim package ${O2SIM_PACKAGE}"
           echo "o2sim_candidate_tag=$O2SIM_PACKAGE" >> $GITHUB_OUTPUT
      
