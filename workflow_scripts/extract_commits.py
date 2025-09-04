@@ -1,19 +1,119 @@
 import json, subprocess, os
+import argparse
+import yaml
+import re
 
-deltas = json.load(open("repo_deltas.json"))
-whitelist = {line.strip() for line in open("whitelist.txt")}
+parser = argparse.ArgumentParser(description="Extracts git commits for various repos between 2 cvmfs tags")
+parser.add_argument("--repos", default="repo_deltas.json", help="File describing the repo diffs")
+parser.add_argument("--whitelist", default="release_note_filter.yml", help="File specifying repos to include")
+parser.add_argument("--generate-report", help="")
+args = parser.parse_args()
+
+deltas = json.load(open(args.repos))
+
+# Load whitelist
+with open(args.whitelist) as f:
+    whitelist_data = yaml.safe_load(f)
+
+# # Convert into a dict for easier lookup
+whitelist = {
+    entry["name"]: entry.get("dirs", [])
+    for entry in whitelist_data["repositories"]
+}
 
 commits = {}
 
-for repo, tags in deltas.items():
+import os
+
+import os
+
+def generate_release_notes(deltas_transformed, commits, whitelist, filename="release-notes.md"):
+    lines = ["# Release Notes\n"]
+
+    # (a) Repository rundown
+    lines.append("## Repository Updates")
+    any_changes = False
+    for repo, data in deltas_transformed.items():
+        prev_tag, new_tag = data.get("previous-tag"), data.get("new-tag")
+        if prev_tag != new_tag:
+            lines.append(f"- **{repo}**: `{prev_tag}` → `{new_tag}`")
+            any_changes = True
+    if not any_changes:
+        lines.append("_No repositories updated._")
+
+    # (b) Whitelisted commits
+    lines.append("\n## MC Relevant Changes")
+    any_commits = False
+    for repo, repo_commits in commits.items():
+        if repo_commits:
+            any_commits = True
+            dirs = whitelist.get(repo, [])
+            dir_list = ", ".join(f"`{d}`" for d in dirs) if dirs else "_(no dir filters)_"
+            lines.append(f"\n### {repo}")
+            lines.append(f"This is the list of commits in dirs matching: {dir_list}\n")
+            for commit in repo_commits:
+                lines.append(f"- {commit}")
+    if not any_commits:
+        lines.append("_No relevant commits found._")
+
+    # Write file
+    with open(filename, "w") as f:
+        f.write("\n".join(lines))
+
+    print(f"Release notes written to {os.path.abspath(filename)}")
+
+# transforms the code into dict of repos containing url and old and new tag
+def transform(data):
+    out = {}
+    pkgs = set(data["previous"]) | set(data.get("current", {}))
+    for p in pkgs:
+        prev, curr = data["previous"].get(p, {}), data.get("current", {}).get(p, {})
+        out[p] = {
+            "source": curr.get("source") or prev.get("source"),
+            "previous-tag": prev.get("tag"),
+            "new-tag": curr.get("tag")
+        }
+    return out
+
+deltas_transformed = transform(deltas)
+print (deltas_transformed)
+
+for repo, repo_data in deltas_transformed.items():
+    print(f"Looking into {repo}")
     if repo not in whitelist:
-       continue
-    url = f"https://github.com/AliceO2Group/{repo}.git"
-    subprocess.run(["git", "clone", "--quiet", "--depth=100", url, repo])
-    log = subprocess.check_output([
-        "git", "-C", repo, "log", f"{tags['from']}..{tags['to']}", "--oneline"
-    ], text=True)
-    commits[repo] = log.strip().split("\n")
+        print(f"repo {repo} not in whitelist")
+        continue
+
+    url = repo_data['source']
+    subprocess.run(
+        ["git", "clone", "--quiet", "--no-single-branch", "--tags", url, repo],
+        check=True
+    )
+
+    # Get log with full diff names (to match regex later)
+    log_cmd = [
+        "git", "-C", repo, "log",
+        f"{repo_data['previous-tag']}..{repo_data['new-tag']}",
+        "--oneline", "--name-only"
+    ]
+    raw_log = subprocess.check_output(log_cmd, text=True)
+
+    # Split into commits and filter by dirs regex
+    repo_commits = []
+    current_commit = None
+    for line in raw_log.splitlines():
+        if re.match(r"^[0-9a-f]+\s", line):  # new commit line
+            current_commit = line
+        elif line.strip():  # file path
+            if any(re.match(pattern, line.strip()) for pattern in whitelist[repo]):
+                if current_commit != None:
+                   repo_commits.append(current_commit)
+                current_commit = None  # prevent duplicates
+    commits[repo] = repo_commits
 
 with open("commits.json", "w") as f:
     json.dump(commits, f, indent=2)
+
+
+#if args.release_notes:
+generate_release_notes(deltas_transformed, commits, whitelist, "release-notes.md")

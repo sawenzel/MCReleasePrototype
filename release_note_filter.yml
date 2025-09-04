@@ -1,0 +1,23 @@
+# listing repositories and directories
+# to be included in a detailed commit list report for MC software tagging
+repositories:
+  - name: O2
+    dirs:
+      - "^CCDB/.*"
+      - "^Common/SimConfig/.*"
+      - "^Common/MathUtils/.*"
+      - "^Common/Utils/.*"
+      - "^DataFormats/.*"
+      - "^Detectors/AOD/.*"
+      - "^Detectors/Base/.*"
+      - "^Detectors/.*/simulation/.*"
+      - "^Detectors/.*/base/.*"
+      - "^Detectors/.*sim.*"
+      - "^Generators/.*"
+      - "^Common/.*"
+      - "^run/.*"
+  - name: O2DPG
+    dirs:
+      - "^MC/.*"
+      - "^GRID/.*"
+      - "UTILS/.*"
