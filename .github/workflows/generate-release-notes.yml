@@ -6,6 +6,9 @@ on:
     paths:
       - 'releases/MCProd_releases.csv'
 
+permissions:
+  contents: write # allow push 
+
 jobs:
   generate:
     runs-on: [self-hosted, alibi-cvmfs]
@@ -75,8 +78,21 @@ jobs:
           source venv/bin/activate
           pip3 install pyyaml
           python3 workflow_scripts/extract_commits.py
-          cat release-notes.md
+          if [ ! -f release-notes.md ]; then
+            exit 1
+          fi
         shell: bash
+
+      - name: Attach release notes
+        run: |
+        run: |
+            FINAL_TAG=${{ steps.extract.outputs.final_tag }}
+            mv release_notes.md release_notes_${FINAL_TAG}.md
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add release-notes*.md
+            git commit -m "Adding release notes" || echo "No changes to commit"
+            git push origin HEAD:${{ github.head_ref }}
 
       # - name: Summarize commits with LLM
       #   id: summary
