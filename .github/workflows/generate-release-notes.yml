@@ -46,9 +46,9 @@ jobs:
           echo "comment=$COMMENT" >> $GITHUB_OUTPUT
           exit 1
       
-      - name: Prepare the releases file
-          
-          /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite
+      #- name: Prepare the releases file
+      #    
+      #    /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite
 
       - name: Get release tag diff
         id: tags
