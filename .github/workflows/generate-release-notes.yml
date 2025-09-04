@@ -1,4 +1,3 @@
-# .github/workflows/generate-release-notes.yml
 name: Generate Release Notes
 
 on:
