@@ -25,8 +25,8 @@ jobs:
           BASE=origin/${{ github.base_ref }}
 
           # get last line of this file in the HEAD version
-          OLD_LINE=(tail -n 1 releases/MCProd_releases.csv)
-          CURR_TAG=$(echo "$NEW_LINE" | cut -d',' -f1 | xargs)
+          OLD_LINE=$(tail -n 1 releases/MCProd_releases.csv)
+          CURR_TAG=$(echo "$OLD_LINE" | cut -d',' -f2 | xargs)
           
           echo "Current tag is ${CURR_TAG}"
           echo "current_tag=${CURR_TAG}" >> $GITHUB_OUTPUT
