@@ -86,10 +86,10 @@ jobs:
       - name: Attach release notes
         run: |
             FINAL_TAG=${{ steps.extract.outputs.final_tag }}
-            mv release-notes.md release-notes-${FINAL_TAG}.md
+            mv release-notes.md releases/release-notes/release-notes-${FINAL_TAG}.md
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add release-notes*.md
+            git add releases/release-notes/release-notes*.md
             git commit -m "Adding release notes" || echo "No changes to commit"
             git push origin HEAD:${{ github.head_ref }}
 
