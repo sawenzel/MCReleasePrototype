@@ -3,8 +3,9 @@ name: Generate Release Notes
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
     paths:
-      - "release-tags.txt"
+      - 'releases/MCProd_releases.csv'
 
 jobs:
   generate:
@@ -16,13 +17,39 @@ jobs:
         with:
           fetch-depth: 0  # Important for git history
 
-      #- name: Setup Python
-      #  uses: actions/setup-python@v5
-      #  with:
-      #    python-version: '3.11'
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }} --depth=1
 
-      #- name: Install dependencies
-      #  run: pip install requests PyGithub
+      - name: Extract tags
+        id: extract
+        run: |
+          BASE=origin/${{ github.base_ref }}
+
+          # get last line of this file in the HEAD version
+          OLD_LINE=(tail -n 1 releases/MCProd_releases.csv)
+          CURR_TAG=$(echo "$NEW_LINE" | cut -d',' -f1 | xargs)
+          
+          echo "Current tag is ${CURR_TAG}"
+          echo "current_tag=${CURR_TAG}" >> $GITHUB_OUTPUT
+
+          NEW_LINE=$(git diff $BASE...HEAD -- releases/MCProd_releases.csv \
+            | grep '^+' | grep -v '^+++' | sed 's/^+//')
+
+          echo "Found new release line: $NEW_LINE"
+          echo "Found base release line: "
+
+          CANDIDATE_TAG=$(echo "$NEW_LINE" | cut -d',' -f1 | xargs)
+          FINAL_TAG=$(echo "$NEW_LINE" | cut -d',' -f2 | xargs)
+          COMMENT=$(echo "$NEW_LINE" | cut -d',' -f3- | xargs)
+
+          echo "candidate_tag=$CANDIDATE_TAG" >> $GITHUB_OUTPUT
+          echo "final_tag=$FINAL_TAG" >> $GITHUB_OUTPUT
+          echo "comment=$COMMENT" >> $GITHUB_OUTPUT
+          exit 1
+      
+      - name: Prepare the releases file
+          
+          /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite
 
       - name: Get release tag diff
         id: tags
