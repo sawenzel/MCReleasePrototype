@@ -2,6 +2,7 @@ import json, subprocess, os
 import argparse
 import yaml
 import re
+import shutil
 
 parser = argparse.ArgumentParser(description="Extracts git commits for various repos between 2 cvmfs tags")
 parser.add_argument("--repos", default="repo_deltas.json", help="File describing the repo diffs")
@@ -85,6 +86,10 @@ for repo, repo_data in deltas_transformed.items():
         continue
 
     url = repo_data['source']
+    # If repo dir exists, delete it
+    if os.path.exists(repo):
+        shutil.rmtree(repo)
+
     subprocess.run(
         ["git", "clone", "--quiet", "--no-single-branch", "--tags", url, repo],
         check=True
