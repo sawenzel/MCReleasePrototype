@@ -4,7 +4,7 @@ def extrac_info(data):
     info = {}
     for entry in data:
         name = entry["name"]
-        tag = entry.get("tag", "UNKNOWN")
+        tag = entry.get("version", "UNKNOWN")
         source = entry.get("source")
         info[name] = { "tag" : tag , "source" : source }
     return info
