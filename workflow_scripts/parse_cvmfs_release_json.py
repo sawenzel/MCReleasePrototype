@@ -1,22 +1,21 @@
 import json, sys
 
+def extrac_info(data):
+    info = {}
+    for entry in data:
+        name = entry["name"]
+        tag = entry.get("tag", "UNKNOWN")
+        source = entry.get("source")
+        info[name] = { "tag" : tag , "source" : source }
+    return info
+
 def extract_repos(release_json_path):
+    data = {}
     with open(release_json_path) as f:
-        data = json.load(f)
+      data = json.load(f)
 
-    def flatten_deps(deps):
-        for key in ["build", "runtime"]:
-            for dep in deps.get(key, []):
-                name = dep["name"]
-                tag = dep.get("tag", "UNKNOWN")
-                source = dep.get("source")
-                if not source:
-                    source = f"https://github.com/AliceO2Group/{name}"
-                yield name, tag, source
-
-    repos = dict(flatten_deps(data["dependencies"]["direct"]))
-    return repos
-
+    return extrac_info(data["dependencies"]["recursive"]["runtime"])
+    
 if __name__ == "__main__":
     # expects a JSON file with base and new tag
     release_file = sys.argv[1]
@@ -24,8 +23,7 @@ if __name__ == "__main__":
     with open(release_file) as fp:
       release_tags = json.load(fp)
     
-    print (release_tags)
-    current = extract_repos(release_tags["base_tag"] + '/.meta.json')
-    previous = extract_repos(release_tags["new_tag"] + '/.meta.json')
+    previous = extract_repos(release_tags["base_tag"] + '/.meta.json')
+    current = extract_repos(release_tags["new_tag"] + '/.meta.json')
 
     print(json.dumps({"previous": previous, "current": current}))
