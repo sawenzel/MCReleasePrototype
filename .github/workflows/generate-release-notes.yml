@@ -34,9 +34,6 @@ jobs:
           NEW_LINE=$(git diff $BASE...HEAD -- releases/MCProd_releases.csv \
             | grep '^+' | grep -v '^+++' | sed 's/^+//')
 
-          echo "Found new release line: $NEW_LINE"
-          echo "Found base release line: "
-
           CANDIDATE_TAG=$(echo "$NEW_LINE" | cut -d',' -f1 | xargs)
           FINAL_TAG=$(echo "$NEW_LINE" | cut -d',' -f2 | xargs)
           COMMENT=$(echo "$NEW_LINE" | cut -d',' -f3- | xargs)
@@ -44,38 +41,47 @@ jobs:
           echo "candidate_tag=$CANDIDATE_TAG" >> $GITHUB_OUTPUT
           echo "final_tag=$FINAL_TAG" >> $GITHUB_OUTPUT
           echo "comment=$COMMENT" >> $GITHUB_OUTPUT
-          exit 1
       
-      #- name: Prepare the releases file
-      #    
-      #    /cvmfs/alice.cern.ch/el9-x86_64/Packages/O2PDPSuite
-
       - name: Get release tag diff
         id: tags
         run: |
-          python3 workflow_scripts/get_release_tags.py release-tags.txt > tags.json
+          # create a tmp file listing both software pieces on CVMFS
+          CURR_TAG=${{ steps.extract.outputs.current_tag }}
+          CAND_TAG=${{ steps.extract.outputs.candidate_tag }}
+          
+          # Checks if the package referenced as candidate_tag actually exists
+          CVMFS_BASE_PATH="/cvmfs/alice.cern.ch/el9-x86_64/Packages/"   
+          # replace :: with /
+          CAND_TAG="${CAND_TAG//:://}"
+          CURR_TAG="${CURR_TAG//:://}"
+
+          echo "${CVMFS_BASE_PATH}/${CURR_TAG}" > compare-tags.txt
+          echo "${CVMFS_BASE_PATH}/${CAND_TAG}" >> compare-tags.txt
+
+          python3 workflow_scripts/get_release_tags.py compare-tags.txt > tags.json
         shell: bash
 
       - name: Summarize tag changes
         id: diff_summary
         run: |
-          python3 workflow_scripts/parse_cvmfs_release_json.py tags.json
+          python3 workflow_scripts/parse_cvmfs_release_json.py tags.json > repo_deltas.json
         shell: bash
 
       - name: Get commits across repos
         id: commits
         run: |
-          python3 scripts/get_commits.py tags.json > commits.json
+          python3 workflow_scripts/extract_commits.py
+          cat release-notes.md
         shell: bash
 
-      - name: Summarize commits with LLM
-        id: summary
-        run: |
-          python3 scripts/summarize_commits.py commits.json > summary.md
-        shell: bash
+      # - name: Summarize commits with LLM
+      #   id: summary
+      #   run: |
+      #     python3 scripts/summarize_commits.py commits.json > summary.md
+      #   shell: bash
 
-      - name: Comment PR with release notes
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 scripts/post_comment.py summary.md
+      # - name: Comment PR with release notes
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     python3 scripts/post_comment.py summary.md
