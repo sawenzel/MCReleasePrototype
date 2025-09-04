@@ -65,11 +65,15 @@ jobs:
         id: diff_summary
         run: |
           python3 workflow_scripts/parse_cvmfs_release_json.py tags.json > repo_deltas.json
+          cat repo_deltas.json
         shell: bash
 
       - name: Get commits across repos
         id: commits
         run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          pip3 install pyyaml
           python3 workflow_scripts/extract_commits.py
           cat release-notes.md
         shell: bash
