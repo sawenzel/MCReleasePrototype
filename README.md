@@ -1,5 +1,5 @@
-![Badge1](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/sawenzel/MCReleasePrototype/O2sim/badge_27506.json)
-![Badge2](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/sawenzel/MCReleasePrototype/O2sim/badge_27506.json)
+![Badge1](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/sawenzel/MCReleasePrototype/refs/heads/O2sim-nightly-status/o2sim_nightlies_status/badge_30350.json?token=GHSAT0AAAAAADITBGZGEG2ZK5ONZNA6DD7C2F3DVSQ)
+![Badge2](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/sawenzel/MCReleasePrototype/refs/heads/O2sim-nightly-status/o2sim_nightlies_status/badge_27506.json)
 ![Badge3](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/sawenzel/MCReleasePrototype/O2sim/badge_27506.json)
 
 # MCReleasePrototype
