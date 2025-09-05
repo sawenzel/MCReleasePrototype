@@ -3,10 +3,14 @@ import argparse
 import yaml
 import re
 import shutil
+import os
 
 parser = argparse.ArgumentParser(description="Extracts git commits for various repos between 2 cvmfs tags")
 parser.add_argument("--repos", default="repo_deltas.json", help="File describing the repo diffs")
 parser.add_argument("--whitelist", default="release_note_filter.yml", help="File specifying repos to include")
+parser.add_argument("--base-tag", default="", help="The base tag (for the report to compare to)")
+parser.add_argument("--new-tag", default="", help="The tag for the release (for the report)")
+parser.add_argument("--daily-candidate-tag", default="", help="The daily tag on which this release is based")
 parser.add_argument("--generate-report", help="")
 args = parser.parse_args()
 
@@ -24,12 +28,12 @@ whitelist = {
 
 commits = {}
 
-import os
-
-import os
-
-def generate_release_notes(deltas_transformed, commits, whitelist, filename="release-notes.md"):
+def generate_release_notes(deltas_transformed, commits, whitelist, base_tag="", release_tag="", daily_tag="", filename="release-notes.md"):
     lines = ["# Release Notes\n"]
+
+    lines.append(f"\nThese are release notes for {release_tag} in comparison to the previous tag {base_tag}.\n")    
+    if len(daily_tag) > 0:
+       lines.append(f"The release is based on the daily tag {daily_tag}.\n\n")
 
     # (a) Repository rundown
     lines.append("## Repository Updates")
@@ -121,4 +125,5 @@ with open("commits.json", "w") as f:
 
 
 #if args.release_notes:
-generate_release_notes(deltas_transformed, commits, whitelist, "release-notes.md")
+generate_release_notes(deltas_transformed, commits, whitelist, base_tag=args.base_tag, 
+                       release_tag=args.new_tag, daily_tag=args.daily_candidate_tag, filename="release-notes.md")
