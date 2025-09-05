@@ -26,9 +26,7 @@ whitelist = {
     for entry in whitelist_data["repositories"]
 }
 
-commits = {}
-
-def generate_release_notes(deltas_transformed, commits, whitelist, base_tag="", release_tag="", daily_tag="", filename="release-notes.md"):
+def generate_release_notes(deltas_transformed, commits, whitelist, authors, base_tag="", release_tag="", daily_tag="", filename="release-notes.md"):
     lines = ["# Release Notes\n"]
 
     lines.append(f"\nThese are release notes for {release_tag} in comparison to the previous tag {base_tag}.\n")    
@@ -61,6 +59,12 @@ def generate_release_notes(deltas_transformed, commits, whitelist, base_tag="", 
     if not any_commits:
         lines.append("_No relevant commits found._")
 
+    # (c) 
+    lines.append("\n## Contributors")
+    if authors:
+      for a in sorted(authors):
+        lines.append(f"- {a}")
+
     # Write file
     with open(filename, "w") as f:
         f.write("\n".join(lines))
@@ -81,7 +85,9 @@ def transform(data):
     return out
 
 deltas_transformed = transform(deltas)
-print (deltas_transformed)
+
+commits = {}
+authors = set()
 
 for repo, repo_data in deltas_transformed.items():
     print(f"Looking into {repo}")
@@ -90,40 +96,48 @@ for repo, repo_data in deltas_transformed.items():
         continue
 
     url = repo_data['source']
-    # If repo dir exists, delete it
     if os.path.exists(repo):
         shutil.rmtree(repo)
-
     subprocess.run(
         ["git", "clone", "--quiet", "--no-single-branch", "--tags", url, repo],
         check=True
     )
 
-    # Get log with full diff names (to match regex later)
     log_cmd = [
         "git", "-C", repo, "log",
         f"{repo_data['previous-tag']}..{repo_data['new-tag']}",
-        "--oneline", "--name-only"
+        "--pretty=format:%h%x09%an%x09%s", "--name-only"
     ]
     raw_log = subprocess.check_output(log_cmd, text=True)
 
-    # Split into commits and filter by dirs regex
     repo_commits = []
-    current_commit = None
-    for line in raw_log.splitlines():
-        if re.match(r"^[0-9a-f]+\s", line):  # new commit line
-            current_commit = line
-        elif line.strip():  # file path
-            if any(re.match(pattern, line.strip()) for pattern in whitelist[repo]):
-                if current_commit != None:
-                   repo_commits.append(current_commit)
-                current_commit = None  # prevent duplicates
-    commits[repo] = repo_commits
+    seen_subjects = set()
+    current_commit, current_files = None, []
+
+    for line in raw_log.splitlines() + [""]:  # add sentinel for last commit
+        if re.match(r"^[0-9a-f]+\t", line):  # commit line
+            if current_commit:  # process previous commit
+                sha, author, subject = current_commit
+                if any(re.match(p, f) for p in whitelist.get(repo, []) for f in current_files):
+                    m = re.match(r'Revert "(.*)"', subject)
+                    if m and m.group(1) in seen_subjects:
+                        repo_commits = [c for c in repo_commits if c[2] != m.group(1)]
+                    else:
+                        seen_subjects.add(subject)
+                        repo_commits.append(current_commit)
+                        authors.add(author)
+            # start new commit
+            current_commit = tuple(line.split("\t", 2))
+            current_files = []
+        elif line.strip():
+            current_files.append(line.strip())
+
+    commits[repo] = [f"{sha} {subject}" for sha, _, subject in repo_commits]
 
 with open("commits.json", "w") as f:
     json.dump(commits, f, indent=2)
 
 
 #if args.release_notes:
-generate_release_notes(deltas_transformed, commits, whitelist, base_tag=args.base_tag, 
+generate_release_notes(deltas_transformed, commits, whitelist, authors, base_tag=args.base_tag, 
                        release_tag=args.new_tag, daily_tag=args.daily_candidate_tag, filename="release-notes.md")
