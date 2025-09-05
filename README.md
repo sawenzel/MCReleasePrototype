@@ -1,3 +1,7 @@
+![Badge1](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/sawenzel/MCReleasePrototype/O2sim/badge_27506.json)
+![Badge2](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/sawenzel/MCReleasePrototype/O2sim/badge_27506.json)
+![Badge3](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/sawenzel/MCReleasePrototype/O2sim/badge_27506.json)
+
 # MCReleasePrototype
 Playground to get ALICE MC release-QC pipeline
 
