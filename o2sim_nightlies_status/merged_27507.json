@@ -380,8 +380,8 @@
     "Output directory": "/alice/sim/2025/LHC22k5_nightly/303109",
     "Total": 110,
     "Done": 101,
-    "Active": "",
-    "Wait": 9,
+    "Active": 9,
+    "Wait": "",
     "Err": ""
   },
   {
