@@ -28,14 +28,13 @@ jobs:
           mkdir -p data
           collector_script=workflow_scripts/lpmtype_jobinfo_collector.py
           
-          mkdir -p o2sim_nightlies_status || " dir exists already "
-          
-          # Query multiple lpmtypes (example: 27506, 27507)
-          python3 ${collector_script} --lpmtype 27506 --output o2sim_nightlies_status/jobs_27506.json
-          python3 ${collector_script} --lpmtype 27507 --output o2sim_nightlies_status/jobs_27507.json
-          # nightly anchored PbPb
-          python3 ${collector_script} --lpmtype 30350 --output o2sim_nightlies_status/jobs_30350.json
-
+          mkdir -p o2sim_nightlies_status || " dir exists already " 
+          LPMTYPES=(27506 27507 30350)
+          for i in "${!LPMTYPES[@]}"; do
+            type="${LPMTYPES[$i]}"
+            echo "Processing type=$type with label=$label"
+            python3 ${collector_script} --lpmtype ${type} --output o2sim_nightlies_status/jobs_${type}.json
+          done
 
       # should get the merged datasets
       - name: Fetch existing branch
@@ -50,18 +49,39 @@ jobs:
       - name: Merge JSONs
         run: |
           source .venv/bin/activate
+          LPMTYPES=(27506 27507 30350)
 
-          python3 workflow_scripts/lpmtype_jobinfo_merger.py o2sim_nightlies_status/jobs_27506.json --output o2sim_nightlies_status/merged_27506.json
-          python3 workflow_scripts/lpmtype_jobinfo_merger.py o2sim_nightlies_status/jobs_27507.json --output o2sim_nightlies_status/merged_27507.json
-          python3 workflow_scripts/lpmtype_jobinfo_merger.py o2sim_nightlies_status/jobs_30350.json --output o2sim_nightlies_status/merged_30350.json
-  
-          jq '' data/merged_27506.json
-          jq '' data/merged_27507.json
-          
+          # loop over indices
+          for i in "${!LPMTYPES[@]}"; do
+            type="${LPMTYPES[$i]}"
+            echo "Processing type=$type"
+            python3 workflow_scripts/lpmtype_jobinfo_merger.py o2sim_nightlies_status/jobs_${type}.json \
+                    --output o2sim_nightlies_status/merged_${type}.json
+          done
+
+      - name: Produce nightly status badge
+        run: |
+          source .venv/bin/activate
+          # define arrays
+          LABELS=("foo" "bar" "Anchor PbPb")
+          LPMTYPES=(27506 27507 30350)
+
+          # loop over indices
+          for i in "${!LPMTYPES[@]}"; do
+            label="${LABELS[$i]}"
+            type="${LPMTYPES[$i]}"
+            echo "Processing type=$type with label=$label"
+            python3 workflow_scripts/produce_nightlies_badge.py \
+              --status-file "o2sim_nightlies_status/merged_${type}.json" \
+              --badge-file "o2sim_nightlies_status/badge_${type}.json" \
+              --label "$label"
+          done
+
       - name: Commit and push results
         run: |
           # stage and commit changes
           git add o2sim_nightlies_status/merged*.json
+          git add o2sim_nightlies_status/badge*.json
           git commit -m "Update nightly job status" || echo "No changes to commit"
           BRANCH="O2sim-nightly-status"
           # git push origin HEAD:${{ github.ref }}
