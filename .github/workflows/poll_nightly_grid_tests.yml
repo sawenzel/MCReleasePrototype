@@ -45,7 +45,7 @@ jobs:
           BRANCH="O2sim-nightly-status"
           git fetch origin $BRANCH || true
           git checkout -B $BRANCH origin/$BRANCH || git checkout -B $BRANCH
-      
+
       - name: Merge JSONs
         run: |
           source .venv/bin/activate
