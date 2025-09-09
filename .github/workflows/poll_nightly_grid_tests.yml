@@ -2,7 +2,7 @@ name: Nightly-MC status collector
 
 on:
   schedule:
-    - cron: "0 12 * * *"   # run daily at 12:00 UTC
+    - cron: "0 * * * *"   # runs every hour (0 minute)
   workflow_dispatch:       # allow manual trigger
 
 permissions:
