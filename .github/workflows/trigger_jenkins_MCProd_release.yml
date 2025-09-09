@@ -112,6 +112,7 @@ jobs:
            # -  ALIDIST_SLUG
            # -  AUTOTAG_PATTERN
            SLUG=${{ steps.slug.outputs.alidist_slug }}
+           SLUG="alisw/alidist@$SLUG"
            PATTERN=${{ steps.extract.outputs.final_tag }}
            PATTERN=${PATTERN##*::}
            echo "Building with slug ${SLUG} and pattern ${PATTERN}"
