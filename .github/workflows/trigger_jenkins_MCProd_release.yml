@@ -1,0 +1,187 @@
+name: Trigger Jenkins MCProd release
+
+on:
+  pull_request:
+    types: [closed]
+    paths:
+      - 'releases/MCProd_releases.csv'
+  workflow_dispatch:       # allow manual trigger
+
+jobs:
+  mcprod-final-release:
+    runs-on: [self-hosted, cern-sso] # needs jenkins access
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Get all history for diffs
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }} --depth=1
+
+      - name: Extract new release line and parse
+        id: extract
+        run: |
+          BASE=origin/${{ github.base_ref }}
+
+          # Get only lines added in this PR to releases
+          git diff $BASE...HEAD -- releases/MCProd_releases.csv
+
+          NEW_LINE=$(git diff $BASE...HEAD -- releases/MCProd_releases.csv \
+            | grep '^+' | grep -v '^+++' | sed 's/^+//')
+
+          echo "Found new release line: $NEW_LINE"
+
+          CANDIDATE_TAG=$(echo "$NEW_LINE" | cut -d',' -f1 | xargs)
+          FINAL_TAG=$(echo "$NEW_LINE" | cut -d',' -f2 | xargs)
+          COMMENT=$(echo "$NEW_LINE" | cut -d',' -f3- | xargs)
+
+          echo "candidate_tag=$CANDIDATE_TAG" >> $GITHUB_OUTPUT
+          echo "final_tag=$FINAL_TAG" >> $GITHUB_OUTPUT
+          echo "comment=$COMMENT" >> $GITHUB_OUTPUT
+      
+      - name: CVFMS access check
+        run: |
+          # Checks if the package referenced as candidate_tag actually exists
+          CVMFS_BASE_PATH="/cvmfs/alice.cern.ch/el9-x86_64/Packages/"
+          echo "Checking for presence of ${CVMFS_BASE_PATH}"
+          if [ -d "${CVMFS_BASE_PATH}" ]; then
+            echo "Found CVFMS"
+          else
+            echo "CMVFS not found"
+            exit 1
+          fi
+
+      - name: CVFMS package check
+        run: |
+          # Checks if the package referenced as candidate_tag actually exists
+          CVMFS_BASE_PATH="/cvmfs/alice.cern.ch/el9-x86_64/Packages/"
+          CAND_PACKAGE=${{ steps.extract.outputs.candidate_tag }}
+          
+          # strip prefix before @ (if any)
+          CAND_PACKAGE="${CAND_PACKAGE#*@}"
+
+          # replace :: with /
+          CAND_PACKAGE="${CAND_PACKAGE//:://}"
+          echo "Checking for presence of ${CVMFS_BASE_PATH}/${CAND_PACKAGE}"
+          if [ -d "${CVMFS_BASE_PATH}/${CAND_PACKAGE}" ]; then
+            echo "Found candidate package ${CAND_PACKAGE} on CVFMS"
+          else
+            echo "${CAND_PACKAGE} not found on CMVFS"
+            exit 1
+          fi
+
+          # 
+
+      - name: Final package not yet there
+        run: |
+          # Checks that the final tag is not yet actually there
+          exit 0
+
+      - name: Extract alidist slug
+        run: |
+          # we need the alidist slug for the final build
+          # a) try to derive it from the daily tag
+          CAND_PACKAGE=${{ steps.extract.outputs.candidate_tag }}
+          # strip prefix before @ (if any)
+          CAND_PACKAGE="${CAND_PACKAGE#*@}"
+          # strip away package part and last -NUMBER to obtain (daily) tag that we can use to query
+          DAILY=$(echo "${CAND_PACKAGE##*::}" | sed 's/-[0-9]\+$//')
+          echo "Extracted tag as ${DAILY}"
+
+          # b) check if the tag is available in the alidist repo
+          git clone https://github.com/alisw/alidist alidist
+          cd alidist
+          git fetch --tags
+          ALIDIST_SLUG=$(git tag | grep "${DAILY}" | tail -n 1)
+          echo "Extracted alidist slug as ${ALIDIST_SLUG}"
+          exit 1
+
+      # This triggers the final build
+      - name: Trigger Jenkins Job
+        id: trigger
+        env:
+            JENKINS_URL : "https://alijenkins.cern.ch/job/Build-MCRelease-O2PDPSuite/buildWithParameters?token=${{ secrets.jenkins_build_token }}"
+            SSO_COOKIES_FILE : ${{ secrets.sso_cookies_path }}
+        run: |
+           # SSO_COOKIES_PATH is a file containing
+           # authentication cookies against the jenkins services. It is made available
+           # on the github runner by other services
+
+           if [ ! -f "${{ secrets.sso_cookies_path }}" ]; then
+              echo "Incomplete cookies setup in the github-runner. Cannot talk to Jenkins."
+              exit 1
+           fi
+
+           # This line triggers the job with the correct parameter
+           # As parameters we use
+           # -  ALIDIST_SLUG
+           # -  AUTOTAG_PATTERN
+           SLUG=ALIDIST_SLUG
+           RAW_RESPONSE=$(curl -s -i -L -k -b "${{ secrets.sso_cookies_path }}"                           \
+                          -X GET                                                                          \
+                          "${JENKINS_URL}&ALIDIST_SLUG=${SLUG}&AUTOTAG_PATTERN=${PATTERN}")
+
+           # Extract all Location headers and look for the last one that looks like a Jenkins queue URL
+           QUEUE_URL=$(echo "$RAW_RESPONSE" | grep -i '^Location:' | awk '{print $2}' | grep '/queue/item/' | tail -n 1 | tr -d '\r\n')
+
+           if [[ -z "$QUEUE_URL" ]]; then
+              echo "❌ Failed: Could not extract valid Jenkins queue URL"
+              exit 1
+           fi
+
+           if [[ "$QUEUE_URL" != *"/item/"* ]]; then
+              echo "❌ Failed: Unexpected queue URL: $QUEUE_URL"
+              exit 1
+           fi
+           echo "QUEUE_URL=${QUEUE_URL}"
+           echo "QUEUE_URL=${QUEUE_URL}" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for Jenkins to assign a build number
+        id: wait_build
+        env:
+          SSO_COOKIES_FILE : ${{ secrets.sso_cookies_path }}
+        run: |
+          # curl -s -L -i -k -b "$SSO_COOKIES_FILE" ${{ steps.trigger.outputs.queue_url }}/api/json
+          FULL_QUEUE_URL="${{ steps.trigger.outputs.queue_url }}/api/json"
+          for i in {1..30}; do
+            echo "Step ${i}"
+            echo "curl -s -L -k -b $SSO_COOKIES_FILE $FULL_QUEUE_URL"
+            # Step 1: Fetch raw response
+            RAW_RESPONSE=$(curl -s -L -k -b "$SSO_COOKIES_FILE" "$FULL_QUEUE_URL")
+            
+            echo "${RAW_RESPONSE}"
+            BUILD_URL=$(echo "$RAW_RESPONSE" | jq -r '.executable.url // empty')
+            if [[ -n "$BUILD_URL" ]]; then
+              echo "Found build URL: $BUILD_URL"
+              echo "build_url=$BUILD_URL" >> "$GITHUB_OUTPUT"
+              echo "build_url=$BUILD_URL"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "❌ Timed out waiting for Jenkins to assign build number"
+          exit 1
+
+      - name: Wait for Jenkins build to complete
+        id: poll_result
+        env: 
+          SSO_COOKIES_FILE : ${{ secrets.sso_cookies_path }}
+        run: |
+          echo "Polling Jenkins for build result..."
+          for i in {1..240}; do
+            RESULT=$(curl -s -L -k -b "$SSO_COOKIES_FILE" "${{ steps.wait_build.outputs.build_url }}/api/json" | jq -r '.result // empty')
+            if [[ -n "$RESULT" ]]; then
+              echo "Build result: $RESULT"
+              echo "result=$RESULT" >> "$GITHUB_OUTPUT"
+              if [[ "$RESULT" == "SUCCESS" ]]; then
+                exit 0
+              else
+                echo "❌ Jenkins build failed with status: $RESULT"
+                exit 1
+              fi
+            fi
+            sleep 60
+          done
+          echo "❌ Timed out waiting for Jenkins build result"
+          exit 1
