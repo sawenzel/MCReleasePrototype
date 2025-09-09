@@ -22,9 +22,7 @@ jobs:
       - name: Extract new release line and parse
         id: extract
         run: |
-          NEW_LINE=$(tail -n 1 releases/MCProd_releases.csv \
-            | grep '^+' | grep -v '^+++' | sed 's/^+//')
-
+          NEW_LINE=$(tail -n 1 releases/MCProd_releases.csv)
           echo "Found new release line: $NEW_LINE"
 
           CANDIDATE_TAG=$(echo "$NEW_LINE" | cut -d',' -f1 | xargs)
