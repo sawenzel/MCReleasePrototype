@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "label": "pp nightly / O2sim::v20250905-1",
-  "message": "waiting",
+  "label": "bar / O2sim::v20250909-1",
+  "message": "running [76/1/33]",
   "color": "orange"
 }
