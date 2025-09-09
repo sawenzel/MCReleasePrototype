@@ -79,7 +79,7 @@ jobs:
           # strip prefix before @ (if any)
           CAND_PACKAGE="${CAND_PACKAGE#*@}"
           # strip away package part and last -NUMBER to obtain (daily) tag that we can use to query
-          DAILY=$(echo "${CAND_PACKAGE##*::}" | sed 's/-[0-9]\+\s\?$//')
+          DAILY=$(echo "${CAND_PACKAGE##*::}" | tr -d '\r\n' | sed -E 's/-[0-9]+$//')
           echo "Extracted tag as ${DAILY}"
 
           # b) check if the tag is available in the alidist repo
