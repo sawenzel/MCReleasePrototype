@@ -72,6 +72,7 @@ jobs:
           exit 0
 
       - name: Extract alidist slug
+        id: slug
         run: |
           # we need the alidist slug for the final build
           # a) try to derive it from the daily tag
@@ -88,7 +89,7 @@ jobs:
           git fetch --tags
           ALIDIST_SLUG=$(git tag | grep "${DAILY}" | tail -n 1)
           echo "Extracted alidist slug as ${ALIDIST_SLUG}"
-          exit 1
+          echo "alidist_slug=$ALIDIST_SLUG" >> $GITHUB_OUTPUT
 
       # This triggers the final build
       - name: Trigger Jenkins Job
@@ -110,7 +111,11 @@ jobs:
            # As parameters we use
            # -  ALIDIST_SLUG
            # -  AUTOTAG_PATTERN
-           SLUG=ALIDIST_SLUG
+           SLUG=${{ steps.slug.outputs.alidist_slug }}
+           PATTERN=${{ steps.extract.outputs.final_tag }}
+           PATTERN=${PATTERN##*::}
+           echo "Building with slug ${SLUG} and pattern ${PATTERN}"
+           exit 1
            RAW_RESPONSE=$(curl -s -i -L -k -b "${{ secrets.sso_cookies_path }}"                           \
                           -X GET                                                                          \
                           "${JENKINS_URL}&ALIDIST_SLUG=${SLUG}&AUTOTAG_PATTERN=${PATTERN}")
