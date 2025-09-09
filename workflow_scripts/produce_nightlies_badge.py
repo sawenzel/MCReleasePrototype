@@ -25,7 +25,7 @@ def create_badge(job, label, threshold = 20):
        message = "⚠️ waiting" # can't take decision yet
        color = "orange"
     elif active > 0:
-       message = "running"
+       message = "🏃 running"
        color = "orange"
     else:
        err_pct = (err / total) * 100
