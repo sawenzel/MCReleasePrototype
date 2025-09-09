@@ -63,7 +63,7 @@ jobs:
         run: |
           source .venv/bin/activate
           # define arrays
-          LABELS=("foo" "bar" "Anchor PbPb")
+          LABELS=("PbPb nightly (27506)" "pp nightly (27507)" "Anchor PbPb (30350)")
           LPMTYPES=(27506 27507 30350)
 
           # loop over indices
