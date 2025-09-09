@@ -22,12 +22,7 @@ jobs:
       - name: Extract new release line and parse
         id: extract
         run: |
-          BASE=origin/${{ github.base_ref }}
-
-          # Get only lines added in this PR to releases
-          git diff $BASE...HEAD -- releases/MCProd_releases.csv
-
-          NEW_LINE=$(git diff $BASE...HEAD -- releases/MCProd_releases.csv \
+          NEW_LINE=$(tail -n 1 releases/MCProd_releases.csv \
             | grep '^+' | grep -v '^+++' | sed 's/^+//')
 
           echo "Found new release line: $NEW_LINE"
