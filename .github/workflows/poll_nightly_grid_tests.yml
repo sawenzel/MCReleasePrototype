@@ -90,7 +90,7 @@ jobs:
           source .venv/bin/activate
           pip3 install mattermostdriver
 
-          python3 repo_master/workflow_scripts/publish_nightlies_mattermost.py --api-token "${ALIPERF_MATTERMOST_API_TOKEN}" --text "Hello from github"
+          python3 repo-master/workflow_scripts/publish_nightlies_mattermost.py --api-token "${ALIPERF_MATTERMOST_API_TOKEN}" --text "Hello from github"
 
       - name: Commit and push results
         run: |
