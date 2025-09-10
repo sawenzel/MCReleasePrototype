@@ -18,7 +18,7 @@ jobs:
       - name: Checkout repo in main branch
         uses: actions/checkout@v4
         with:
-          ref: master
+          ref: main
           path: repo-master
 
       - name: Set up Python venv
@@ -89,7 +89,7 @@ jobs:
         run: |
           source .venv/bin/activate
           pip3 install mattermostdriver
-          
+
           python3 repo_master/workflow_scripts/publish_nightlies_mattermost.py --api-token "${ALIPERF_MATTERMOST_API_TOKEN}" --text "Hello from github"
 
       - name: Commit and push results
