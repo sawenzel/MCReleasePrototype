@@ -1,5 +1,10 @@
+[Link to Anchored PbPb jobs :](https://alimonitor.cern.ch/prod/jobs.jsp?t=30350) 
 ![Badge1](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/sawenzel/MCReleasePrototype/refs/heads/O2sim-nightly-status/o2sim_nightlies_status/badge_30350.json)
+
+[Link to nightly PbPb jobs :](https://alimonitor.cern.ch/prod/jobs.jsp?t=27506) 
 ![Badge2](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/sawenzel/MCReleasePrototype/refs/heads/O2sim-nightly-status/o2sim_nightlies_status/badge_27506.json)
+
+[Link to nightly pp jobs :](https://alimonitor.cern.ch/prod/jobs.jsp?t=27507) 
 ![Badge3](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/sawenzel/MCReleasePrototype/refs/heads/O2sim-nightly-status/o2sim_nightlies_status/badge_27507.json)
 
 # MCReleasePrototype
