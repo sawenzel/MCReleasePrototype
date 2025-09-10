@@ -4,6 +4,5 @@
 #The daily tag is a release candidate already on CVMFS.
 #
 #daily-tag,release-tag,comment
-O2PDPSuite::daily-20250806-0000-1, O2PDPSuite::MC-prod-2025-v9-1, ""
-O2PDPSuite::daily-20250904-0000-1, O2PDPSuite::MC-prod-2025-v11-1, ""
-
+O2PDPSuite::daily-20250806-0000-1, O2PDPSuite::MC-prod-2025-v9, ""
+O2PDPSuite::daily-20250904-0000-1, O2PDPSuite::MC-prod-2025-v11, "new release; better physics"
