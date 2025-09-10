@@ -77,6 +77,13 @@ jobs:
               --label "$label"
           done
 
+      - name: Communicate to mattermost
+        run: |
+          source .venv/bin/activate
+          pip3 install mattermostdriver
+          ALIPERF_MATTERMOST_API_TOKEN = ${{ secrets.aliperf_mattermost_token }}
+          python3 workflow_scripts/publish_nightlies_mattermost.py --api-token ${ALIPERF_MATTERMOST_API_TOKEN} --text "Hello from github"
+
       - name: Commit and push results
         run: |
           # stage and commit changes
