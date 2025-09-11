@@ -424,9 +424,9 @@
     "Output directory": "/alice/sim/2025/LHC22k4_nightly/311122",
     "Total": 110,
     "Done": 69,
-    "Active": 2,
+    "Active": "",
     "Wait": "",
-    "Err": 39
+    "Err": 41
   },
   {
     "PID": 3409829646,
@@ -434,9 +434,9 @@
     "SoftwarePackage": "O2sim::v20250910-3",
     "Output directory": "/alice/sim/2025/LHC22k4_nightly/311122",
     "Total": 110,
-    "Done": 33,
-    "Active": 5,
+    "Done": 34,
+    "Active": 3,
     "Wait": "",
-    "Err": 72
+    "Err": 73
   }
 ]
