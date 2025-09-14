@@ -456,8 +456,8 @@
     "SoftwarePackage": "O2sim::v20250914-1",
     "Output directory": "/alice/sim/2024/LHC24e7/v20250914-1",
     "Total": 110,
-    "Done": 38,
-    "Active": 72,
+    "Done": 99,
+    "Active": 11,
     "Wait": "",
     "Err": ""
   }
