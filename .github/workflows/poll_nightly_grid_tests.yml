@@ -90,13 +90,28 @@ jobs:
           source .venv/bin/activate
           pip3 install mattermostdriver
 
-          python3 repo-master/workflow_scripts/publish_nightlies_mattermost.py --api-token "${ALIPERF_MATTERMOST_API_TOKEN}" --text "Hello from github"
+          if [ ! -f o2sim_nightlies_status/mattermost_threads.json ]; then
+             echo "{}" > o2sim_nightlies_status/mattermost_threads.json
+          fi
+
+          # at this moment we have the badge
+          # ---> get current O2sim version
+          CURRENT_SOFTWARE_PACKAGE=$(jq -r 'max_by(.PID) | .SoftwarePackage' o2sim_nightlies_status/merged_27507.json)
+          echo "The current software package is ${CURRENT_SOFTWARE_PACKAGE}"
+
+          # ---> get message id for this version
+          python3 repo-master/workflow_scripts/publish_nightlies_mattermost.py              \
+                  --api-token "${ALIPERF_MATTERMOST_API_TOKEN}"                              \ 
+                  --mattermost-threads-cache o2sim_nightlies_status/mattermost_threads.json  \
+                  --software-package ${CURRENT_SOFTWARE_PACKAGE}                             \
+                  --badge-files o2sim_nightlies_status/badge_*.json
 
       - name: Commit and push results
         run: |
           # stage and commit changes
           git add o2sim_nightlies_status/merged*.json
           git add o2sim_nightlies_status/badge*.json
+          git add o2sim_nightlies_status/mattermost_threads.json
           git commit -m "Update nightly job status" || echo "No changes to commit"
           BRANCH="O2sim-nightly-status"
           # git push origin HEAD:${{ github.ref }}
