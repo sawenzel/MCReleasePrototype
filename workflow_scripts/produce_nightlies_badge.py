@@ -49,7 +49,7 @@ def main():
     parser.add_argument("--status-file")
     parser.add_argument("--badge-file")
     parser.add_argument("--label", default="", help = "Label for this badge")
-    parser.add_argument("--threshold", default=0.2, help="Error threshold")
+    parser.add_argument("--threshold", default=20, help="Error threshold in percent")
     args = parser.parse_args()
     
     max_pid = 0
