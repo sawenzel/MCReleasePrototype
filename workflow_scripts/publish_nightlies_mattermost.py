@@ -9,7 +9,6 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Create O2sim nightlies summary badge")
 parser.add_argument("--api-token", help="Mattermost API token")
-parser.add_argument("--text", default="Foo")
 parser.add_argument("--software-package", help = "The package for which we want to publish (determines mattermost thread)")
 parser.add_argument("--badge-files", nargs="+", help = "List of nightly badge files to read status from")
 parser.add_argument("--mattermost-threads-cache", help = "A file containing a software package to mattermost messag id mapping")

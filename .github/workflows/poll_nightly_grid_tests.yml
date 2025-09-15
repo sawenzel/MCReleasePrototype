@@ -100,8 +100,8 @@ jobs:
           echo "The current software package is ${CURRENT_SOFTWARE_PACKAGE}"
 
           # ---> get message id for this version
-          python3 repo-master/workflow_scripts/publish_nightlies_mattermost.py              \
-                  --api-token "${ALIPERF_MATTERMOST_API_TOKEN}"                              \ 
+          python3 repo-master/workflow_scripts/publish_nightlies_mattermost.py               \
+                  --api-token "${ALIPERF_MATTERMOST_API_TOKEN}"                              \
                   --mattermost-threads-cache o2sim_nightlies_status/mattermost_threads.json  \
                   --software-package ${CURRENT_SOFTWARE_PACKAGE}                             \
                   --badge-files o2sim_nightlies_status/badge_*.json
