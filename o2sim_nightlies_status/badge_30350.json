@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
   "label": "Anchor PbPb (30350) / O2sim::v20250916-1",
-  "message": "\u274c bad [105/5/0]",
-  "color": "red"
+  "message": "\u2705 good [105/5/0]",
+  "color": "green"
 }
