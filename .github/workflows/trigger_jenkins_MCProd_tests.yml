@@ -15,6 +15,13 @@ jobs:
         with:
           fetch-depth: 0  # Get all history for diffs
 
+      - name: Checkout repo in main branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+          path: repo-master
+
       - name: Fetch base branch
         run: git fetch origin ${{ github.base_ref }} --depth=1
 
@@ -111,7 +118,7 @@ jobs:
           git checkout O2sim-nightly-status
           
           # we need to loop over all files and see if the package has a good status
-          python3 ./workflow_scripts/checktag_against_nightlies.py ${{ steps.o2simextract.outputs.o2sim_candidate_tag }} --datadir o2sim_nightlies_status
+          python3 ./repo-master/workflow_scripts/checktag_against_nightlies.py ${{ steps.o2simextract.outputs.o2sim_candidate_tag }} --datadir o2sim_nightlies_status
 
           # we
           exit 1

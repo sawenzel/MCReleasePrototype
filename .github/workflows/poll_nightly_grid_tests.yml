@@ -32,7 +32,7 @@ jobs:
         run: |
           source .venv/bin/activate
           mkdir -p data
-          collector_script=workflow_scripts/lpmtype_jobinfo_collector.py
+          collector_script=repo-master/workflow_scripts/lpmtype_jobinfo_collector.py
           
           mkdir -p o2sim_nightlies_status || " dir exists already " 
           LPMTYPES=(27506 27507 30350)
@@ -61,7 +61,7 @@ jobs:
           for i in "${!LPMTYPES[@]}"; do
             type="${LPMTYPES[$i]}"
             echo "Processing type=$type"
-            python3 workflow_scripts/lpmtype_jobinfo_merger.py o2sim_nightlies_status/jobs_${type}.json \
+            python3 repo-master/workflow_scripts/lpmtype_jobinfo_merger.py o2sim_nightlies_status/jobs_${type}.json \
                     --output o2sim_nightlies_status/merged_${type}.json
           done
 
@@ -77,7 +77,7 @@ jobs:
             label="${LABELS[$i]}"
             type="${LPMTYPES[$i]}"
             echo "Processing type=$type with label=$label"
-            python3 workflow_scripts/produce_nightlies_badge.py \
+            python3 repo-master/workflow_scripts/produce_nightlies_badge.py \
               --status-file "o2sim_nightlies_status/merged_${type}.json" \
               --badge-file "o2sim_nightlies_status/badge_${type}.json" \
               --label "$label"
