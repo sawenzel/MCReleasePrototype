@@ -43,7 +43,7 @@ jobs:
           sleep 1
 
           # bring down the fileaccess_monitor
-          kill -9 ${MONITOR_PID}
+          kill -9 ${MONITOR_PID} || echo "process no longer exists"
           cat fileaccess_log
 
       - name: Produce the graph
