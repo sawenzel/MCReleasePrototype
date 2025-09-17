@@ -34,7 +34,7 @@ jobs:
         run: |          
           # find out the PID of this shell
           export MAXMOTHERPID=$$
-          ( ./monitor_fileaccess.exe &> fileaccess_log ) &
+          ( ./O2DPG/UTILS/FileIOGraph/monitor_fileaccess.exe &> fileaccess_log ) &
           MONITOR_PID=$!
 
           # now start the MC workflow
@@ -43,7 +43,7 @@ jobs:
           # bring down the fileaccess_monitor
           kill -9 ${MONITOR_PID}
           cat fileaccess_log
-          
+
       - name: Produce the graph
         id: graph
         run: |
