@@ -10,6 +10,7 @@ on:
 jobs:
   mcprod-final-release:
     runs-on: [self-hosted, cern-sso] # needs jenkins access
+    if: github.event.pull_request.merged == true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

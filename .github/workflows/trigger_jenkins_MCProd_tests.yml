@@ -110,6 +110,7 @@ jobs:
           echo "o2sim_candidate_tag=$O2SIM_PACKAGE" >> $GITHUB_OUTPUT
      
       - name: Check O2sim GRID nightlies
+        continue-on-error: true
         run: |
           # This verifies that the package is tested ok within the O2sim nightlies
           # The status data is provided by another workflow, which saves it into dedicated data files
@@ -119,9 +120,6 @@ jobs:
           
           # we need to loop over all files and see if the package has a good status
           python3 ./repo-master/workflow_scripts/checktag_against_nightlies.py ${{ steps.o2simextract.outputs.o2sim_candidate_tag }} --datadir o2sim_nightlies_status
-
-          # we
-          exit 0
 
       - name: Trigger Jenkins Job
         id: trigger
