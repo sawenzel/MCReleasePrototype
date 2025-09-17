@@ -25,7 +25,7 @@ jobs:
         run: |
           # checkout the code and compile
           git clone https://github.com/AliceO2Group/O2DPG O2DPG
-          cd O2DPG/UTILS/FileO2Graph
+          cd O2DPG/UTILS/FileIOGraph
           g++ monitor_fileaccess.cpp -O2 -o monitor_fileaccess.exe
 
       - name: Launch the daemon and run workflow
