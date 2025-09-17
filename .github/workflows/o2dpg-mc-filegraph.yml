@@ -27,7 +27,8 @@ jobs:
           git clone https://github.com/AliceO2Group/O2DPG O2DPG
           cd O2DPG/UTILS/FileIOGraph
           g++ monitor_fileaccess.cpp -O2 -o monitor_fileaccess.exe
-          sudo MAXMOTHERPID=689584 ./monitor_fileaccess.exe | tee /tmp/fileaccess
+          export MAXMOTHERPID=689584 
+          ./monitor_fileaccess.exe | tee /tmp/fileaccess
 
       - name: Launch the daemon and run workflow
         id: tags
