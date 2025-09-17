@@ -121,7 +121,7 @@ jobs:
           python3 ./repo-master/workflow_scripts/checktag_against_nightlies.py ${{ steps.o2simextract.outputs.o2sim_candidate_tag }} --datadir o2sim_nightlies_status
 
           # we
-          exit 1
+          exit 0
 
       - name: Trigger Jenkins Job
         id: trigger
