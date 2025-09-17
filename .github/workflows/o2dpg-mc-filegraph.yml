@@ -1,0 +1,47 @@
+# A action to produce the O2DPG filegraph artefact.
+# This can be used to optimize runtime execution and delete files early
+name: O2DPG file-graph generation
+
+on:
+  workflow_dispatch:  # manual trigger
+
+permissions:
+  contents: write # allow push
+
+jobs:
+  graph-artefact:
+    runs-on: [self-hosted, alibi-cvmfs]
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Important for git history
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }} --depth=1
+
+      - name: Get code
+        run: |
+          # checkout the code and compile
+          git clone https://github.com/AliceO2Group/O2DPG O2DPG
+          cd O2DPG/UTILS/FileO2Graph
+          g++ monitor_fileaccess.cpp -O2 -o monitor_fileaccess.exe
+
+      - name: Launch the daemon and run workflow
+        id: tags
+        shell: bash
+        run: |
+          echo ""
+
+      - name: Produce the graph
+        id: diff_summary
+        run: |
+          python3 workflow_scripts/parse_cvmfs_release_json.py tags.json > repo_deltas.json
+          cat repo_deltas.json
+        shell: bash
+
+      - name: Publish the graph
+        run: |
+          exit 0
+        
