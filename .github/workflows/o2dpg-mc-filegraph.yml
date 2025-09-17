@@ -42,7 +42,8 @@ jobs:
 
           # bring down the fileaccess_monitor
           kill -9 ${MONITOR_PID}
-
+          cat fileaccess_log
+          
       - name: Produce the graph
         id: graph
         run: |
