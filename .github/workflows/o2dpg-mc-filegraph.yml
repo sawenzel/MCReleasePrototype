@@ -34,11 +34,13 @@ jobs:
         run: |          
           # find out the PID of this shell
           export MAXMOTHERPID=$$
-          ( ./O2DPG/UTILS/FileIOGraph/monitor_fileaccess.exe &> fileaccess_log ) &
+          ./O2DPG/UTILS/FileIOGraph/monitor_fileaccess.exe &> fileaccess_log &
           MONITOR_PID=$!
 
           # now start the MC workflow
           ls # just a placeholder
+
+          sleep 1
 
           # bring down the fileaccess_monitor
           kill -9 ${MONITOR_PID}
