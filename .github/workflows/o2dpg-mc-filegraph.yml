@@ -39,9 +39,10 @@ jobs:
 
           # now start the MC workflow
           ls # just a placeholder
+          touch buz
           echo "writing" > kaz
 
-          sleep 1
+          sleep 10
 
           # bring down the fileaccess_monitor
           kill -9 ${MONITOR_PID} || echo "process no longer exists"
