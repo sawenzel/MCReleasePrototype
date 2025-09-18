@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   graph-artefact:
-    runs-on: [self-hosted, alibi-cvmfs]
+    runs-on: [self-hosted, alice-mctest-vm-2]
     
     steps:
       - name: Checkout
@@ -21,12 +21,12 @@ jobs:
       - name: Fetch base branch
         run: git fetch origin ${{ github.base_ref }} --depth=1
 
-      - name: Compile monitor
-        run: |
-          # checkout the code and compile
-          git clone https://github.com/AliceO2Group/O2DPG O2DPG
-          cd O2DPG/UTILS/FileIOGraph
-          g++ monitor_fileaccess.cpp -O2 -o monitor_fileaccess.exe
+      #- name: Compile monitor
+      #  run: |
+      #    # checkout the code and compile
+      #    git clone https://github.com/AliceO2Group/O2DPG O2DPG
+      #    cd O2DPG/UTILS/FileIOGraph
+      #    g++ monitor_fileaccess.cpp -O2 -o monitor_fileaccess.exe
           
       - name: Launch the daemon and run workflow
         id: tags
@@ -34,11 +34,12 @@ jobs:
         run: |          
           # find out the PID of this shell
           export MAXMOTHERPID=$$
-          ./O2DPG/UTILS/FileIOGraph/monitor_fileaccess.exe &> fileaccess_log &
+          /home/github_runner/runner_tools/O2DPG/UTILS/FileIOGraph/monitor_fileaccess.exe &> fileaccess_log &
           MONITOR_PID=$!
 
           # now start the MC workflow
           ls # just a placeholder
+          echo "writing" > kaz
 
           sleep 1
 
