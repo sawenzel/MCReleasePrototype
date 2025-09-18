@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   graph-artefact:
-    runs-on: [self-hosted, alice-mctest-vm-2]
+    runs-on: [self-hosted, openstack-priv]
     
     steps:
       - name: Checkout
