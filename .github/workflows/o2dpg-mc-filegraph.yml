@@ -34,7 +34,7 @@ jobs:
         run: |          
           # find out the PID of this shell
           export MAXMOTHERPID=$$
-          /home/github_runner/runner_tools/O2DPG/UTILS/FileIOGraph/monitor_fileaccess.exe &> fileaccess_log &
+          /home/github_runner/runner_tools/O2DPG/UTILS/FileIOGraph/monitor_fileaccess_v2.exe &> fileaccess_log &
           MONITOR_PID=$!
 
           # now start the MC workflow
