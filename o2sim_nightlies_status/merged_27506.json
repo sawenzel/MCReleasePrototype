@@ -489,9 +489,42 @@
     "SoftwarePackage": "O2sim::v20250916-1",
     "Output directory": "/alice/sim/2025/LHC22k4_nightly/311128",
     "Total": 110,
-    "Done": 53,
-    "Active": 11,
+    "Done": 64,
+    "Active": "",
     "Wait": "",
     "Err": 46
+  },
+  {
+    "PID": 3416014023,
+    "Run no.": 311131,
+    "SoftwarePackage": "O2sim::v20250919-1",
+    "Output directory": "/alice/sim/2025/LHC22k4_nightly/311131",
+    "Total": 110,
+    "Done": "",
+    "Active": 103,
+    "Wait": "",
+    "Err": 7
+  },
+  {
+    "PID": 3415048257,
+    "Run no.": 311130,
+    "SoftwarePackage": "O2sim::v20250918-1",
+    "Output directory": "/alice/sim/2025/LHC22k4_nightly/311130",
+    "Total": 110,
+    "Done": 84,
+    "Active": "",
+    "Wait": "",
+    "Err": 26
+  },
+  {
+    "PID": 3414181212,
+    "Run no.": 311129,
+    "SoftwarePackage": "O2sim::v20250917-1",
+    "Output directory": "/alice/sim/2025/LHC22k4_nightly/311129",
+    "Total": 110,
+    "Done": 92,
+    "Active": "",
+    "Wait": "",
+    "Err": 18
   }
 ]
