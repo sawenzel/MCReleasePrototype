@@ -501,9 +501,9 @@
     "Output directory": "/alice/sim/2025/LHC22k4_nightly/311131",
     "Total": 110,
     "Done": 98,
-    "Active": 1,
+    "Active": "",
     "Wait": "",
-    "Err": 11
+    "Err": 12
   },
   {
     "PID": 3415048257,
