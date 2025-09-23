@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   graph-artefact:
-    runs-on: [self-hosted, openstack-priv]
+    runs-on: [self-hosted, alibi-cvmfs, singularity] # runs on special hardware having CVMFS and sudo apptainer
     
     steps:
       - name: Checkout
@@ -21,38 +21,38 @@ jobs:
       - name: Fetch base branch
         run: git fetch origin ${{ github.base_ref }} --depth=1
 
-      #- name: Compile monitor
-      #  run: |
-      #    # checkout the code and compile
-      #    git clone https://github.com/AliceO2Group/O2DPG O2DPG
-      #    cd O2DPG/UTILS/FileIOGraph
-      #    g++ monitor_fileaccess.cpp -O2 -o monitor_fileaccess.exe
+      - name: Setup the task
+        run: |
+          cat > job_script.sh <<EOF
+          #!/usr/bin/bash
+          git clone https://github.com/AliceO2Group/O2DPG O2DPG
+          g++ -O2 ./O2DPG/UTILS/FileIOGraph/monitor_fileaccess_v2.cpp -o monitor_fileaccess_v2.exe
+
+          export O2DPG_ROOT=${PWD}/O2DPG
+          export O2DPG_PRODUCE_FILEGRAPH=${PWD}/monitor_fileaccess_v2.exe
+
+          ${O2DPG_ROOT}/MC/bin/o2dpg_sim_workflow.py -eCM 900 -col pp -gen pythia8 -proc inel -tf 1     \
+                                                        -ns 10 -e TGeant3                     \
+                                                        -interactionRate 10000                \
+                                                        -productionTag "alibi_O2DPG_pp_minbias_testbeam" \
+                                                        -run 301000 -seed 624
+
+          ${O2DPG_ROOT}/MC/bin/o2_dpg_workflow_runner.py -f workflow.json -tt sgngen --cpu-limit 8
+          EOF
+
+      - name: Run job
+        run: |
+          # checkout the runTimeCode
+          git clone https://github.com/AliceO2Group/O2DPG O2DPG
           
-      - name: Launch the daemon and run workflow
-        id: tags
-        shell: bash
-        run: |          
-          # find out the PID of this shell
-          export MAXMOTHERPID=$$
-          /home/github_runner/runner_tools/O2DPG/UTILS/FileIOGraph/monitor_fileaccess_v2.exe &> fileaccess_log &
-          MONITOR_PID=$!
+          mkdir job_workdir
+          export WORK_DIR=${PWD}/job_workdir
 
-          # now start the MC workflow
-          ls # just a placeholder
-          touch buz
-          echo "writing" > kaz
+          # run the above script in apptainer in a specified software version
+          APPTAINER_SUDO=yes GRID_CVMFS_PACKAGE=O2sim::v20250923-1 ./O2DPG/GRID/utils/runGRIDContainerized.sh ./job_script.sh
 
-          sleep 10
-
-          # bring down the fileaccess_monitor
-          kill -9 ${MONITOR_PID} || echo "process no longer exists"
-          cat fileaccess_log
-
-      - name: Produce the graph
+      - name: Show the graph
         id: graph
         run: |
+          cat job_workdir/pipeline*report.json
 
-      - name: Publish the graph
-        run: |
-          exit 0
-        
