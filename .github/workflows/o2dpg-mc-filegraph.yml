@@ -57,7 +57,7 @@ jobs:
           export WORK_DIR=${PWD}/job_workdir
 
           # run the above script in apptainer in a specified software version
-          APPTAINER_SUDO=yes GRID_CVMFS_PACKAGE=O2sim::v20250925-1 ./O2DPG/GRID/utils/runGRIDContainerized.sh ./job_script.sh
+          APPTAINER_SUDO=yes GRID_CVMFS_PACKAGE=O2sim::v20250924-1 ./O2DPG/GRID/utils/runGRIDContainerized.sh ./job_script.sh
 
       - name: Show the graph
         id: graph
