@@ -25,8 +25,13 @@ jobs:
         run: |
           cat > job_script.sh <<EOF
           #!/usr/bin/bash
+
+          cat $0
+
           git clone https://github.com/AliceO2Group/O2DPG O2DPG
           g++ -O2 ./O2DPG/UTILS/FileIOGraph/monitor_fileaccess_v2.cpp -o monitor_fileaccess_v2.exe
+
+          export
 
           pwd
           export O2DPG_ROOT="${PWD}/O2DPG"
