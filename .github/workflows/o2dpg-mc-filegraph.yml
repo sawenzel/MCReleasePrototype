@@ -28,12 +28,15 @@ jobs:
           git clone https://github.com/AliceO2Group/O2DPG O2DPG
           g++ -O2 ./O2DPG/UTILS/FileIOGraph/monitor_fileaccess_v2.cpp -o monitor_fileaccess_v2.exe
 
-          export O2DPG_ROOT=${PWD}/O2DPG
+          pwd
+          export O2DPG_ROOT="${PWD}/O2DPG"
           export O2DPG_PRODUCE_FILEGRAPH=${PWD}/monitor_fileaccess_v2.exe
 
-          ${O2DPG_ROOT}/MC/bin/o2dpg_sim_workflow.py -eCM 900 -col pp -gen pythia8 -proc inel -tf 1     \
-                                                        -ns 10 -e TGeant3                     \
-                                                        -interactionRate 10000                \
+          echo "O2DPG_ROOT is ${O2DPG_ROOT}"
+
+          ${O2DPG_ROOT}/MC/bin/o2dpg_sim_workflow.py -eCM 900 -col pp -gen pythia8 -proc inel -tf 1      \
+                                                        -ns 10 -e TGeant3                                \
+                                                        -interactionRate 10000                           \
                                                         -productionTag "alibi_O2DPG_pp_minbias_testbeam" \
                                                         -run 301000 -seed 624
 
