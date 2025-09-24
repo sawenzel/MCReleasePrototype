@@ -576,10 +576,10 @@
     "Run no.": 311136,
     "SoftwarePackage": "O2sim::v20250924-1",
     "Output directory": "/alice/sim/2025/LHC22k4_nightly/311136",
-    "Total": 1,
+    "Total": 110,
     "Done": "",
-    "Active": "",
-    "Wait": 1,
-    "Err": ""
+    "Active": 104,
+    "Wait": "",
+    "Err": 6
   }
 ]
