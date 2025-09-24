@@ -31,12 +31,8 @@ jobs:
           git clone https://github.com/AliceO2Group/O2DPG O2DPG
           g++ -O2 ./O2DPG/UTILS/FileIOGraph/monitor_fileaccess_v2.cpp -o monitor_fileaccess_v2.exe
 
-          export
-
-          #export O2DPG_ROOT="${PWD}/O2DPG"
+          # this enables the file-graph generation
           export O2DPG_PRODUCE_FILEGRAPH=${PWD}/monitor_fileaccess_v2.exe
-
-          echo "O2DPG_ROOT is ${O2DPG_ROOT}"
 
           ${O2DPG_ROOT}/MC/bin/o2dpg_sim_workflow.py -eCM 900 -col pp -gen pythia8 -proc inel -tf 1      \
                                                         -ns 10 -e TGeant3                                \
@@ -61,5 +57,10 @@ jobs:
       - name: Show the graph
         id: graph
         run: |
-          cat job_workdir/pipeline*report.json
+          cat job_workdir/pipeline*report*.json
+
+      # necessary so that github actions runner can delete the workspace polluted by root
+      - name: Fix permissions
+        if: always()
+        run: sudo chown -R $USER:$USER $GITHUB_WORKSPACE
 
