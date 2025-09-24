@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   graph-artefact:
-    runs-on: [self-hosted, alibi-cvmfs, singularity] # runs on special hardware having CVMFS and sudo apptainer
+    runs-on: [self-hosted, openstack-priv] # runs on special hardware having CVMFS and sudo apptainer
     
     steps:
       - name: Checkout
