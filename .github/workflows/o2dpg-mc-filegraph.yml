@@ -34,7 +34,7 @@ jobs:
           export
 
           #export O2DPG_ROOT="${PWD}/O2DPG"
-          #export O2DPG_PRODUCE_FILEGRAPH=${PWD}/monitor_fileaccess_v2.exe
+          export O2DPG_PRODUCE_FILEGRAPH=${PWD}/monitor_fileaccess_v2.exe
 
           echo "O2DPG_ROOT is ${O2DPG_ROOT}"
 
