@@ -23,17 +23,15 @@ jobs:
 
       - name: Setup the task
         run: |
-          cat > job_script.sh <<EOF
+          cat > job_script.sh <<'EOF'
           #!/usr/bin/bash
 
-          cat job.sh
+          cat $0
 
           git clone https://github.com/AliceO2Group/O2DPG O2DPG
           g++ -O2 ./O2DPG/UTILS/FileIOGraph/monitor_fileaccess_v2.cpp -o monitor_fileaccess_v2.exe
 
           export
-          echo "--"
-          env
 
           pwd
           #export O2DPG_ROOT="${PWD}/O2DPG"
@@ -59,7 +57,7 @@ jobs:
           export WORK_DIR=${PWD}/job_workdir
 
           # run the above script in apptainer in a specified software version
-          APPTAINER_SUDO=yes GRID_CVMFS_PACKAGE=O2sim::v20250924-1 ./O2DPG/GRID/utils/runGRIDContainerized.sh ./job_script.sh
+          APPTAINER_SUDO=yes GRID_CVMFS_PACKAGE=O2sim::v2025092-1 ./O2DPG/GRID/utils/runGRIDContainerized.sh ./job_script.sh
 
       - name: Show the graph
         id: graph
