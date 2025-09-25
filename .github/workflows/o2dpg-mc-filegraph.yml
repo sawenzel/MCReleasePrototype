@@ -35,12 +35,12 @@ jobs:
           export O2DPG_PRODUCE_FILEGRAPH=${PWD}/monitor_fileaccess_v2.exe
 
           ${O2DPG_ROOT}/MC/bin/o2dpg_sim_workflow.py -eCM 900 -col pp -gen pythia8 -proc inel -tf 1      \
-                                                        -ns 10 -e TGeant3                                \
+                                                        -ns 10 -e TGeant4                                \
                                                         -interactionRate 10000                           \
                                                         -productionTag "alibi_O2DPG_pp_minbias_testbeam" \
-                                                        -run 301000 -seed 624
+                                                        -run 301000 -seed 624 --include-qc
 
-          ${O2DPG_ROOT}/MC/bin/o2_dpg_workflow_runner.py -f workflow.json -tt aod --cpu-limit 8
+          ${O2DPG_ROOT}/MC/bin/o2_dpg_workflow_runner.py -f workflow.json --target-labels AOD QC --cpu-limit 8
           EOF
 
       - name: Run job
