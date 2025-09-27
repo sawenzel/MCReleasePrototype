@@ -609,10 +609,10 @@
     "Run no.": 303131,
     "SoftwarePackage": "O2sim::v20250927-1",
     "Output directory": "/alice/sim/2025/LHC22k5_nightly/303131",
-    "Total": 1,
+    "Total": 110,
     "Done": "",
-    "Active": "",
-    "Wait": 1,
+    "Active": 110,
+    "Wait": "",
     "Err": ""
   }
 ]
