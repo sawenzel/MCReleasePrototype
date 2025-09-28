@@ -614,5 +614,16 @@
     "Active": "",
     "Wait": "",
     "Err": 9
+  },
+  {
+    "PID": 3422328736,
+    "Run no.": 311140,
+    "SoftwarePackage": "O2sim::v20250928-1",
+    "Output directory": "/alice/sim/2025/LHC22k4_nightly/311140",
+    "Total": 110,
+    "Done": "",
+    "Active": 86,
+    "Wait": "",
+    "Err": 24
   }
 ]
