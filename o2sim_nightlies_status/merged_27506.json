@@ -632,8 +632,8 @@
     "SoftwarePackage": "O2sim::v20250929-1",
     "Output directory": "/alice/sim/2025/LHC22k4_nightly/311141",
     "Total": 110,
-    "Done": 1,
-    "Active": 108,
+    "Done": 4,
+    "Active": 105,
     "Wait": "",
     "Err": 1
   }
