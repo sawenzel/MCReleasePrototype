@@ -52,16 +52,28 @@ jobs:
           CURR_TAG=${{ steps.extract.outputs.current_tag }}
           CAND_TAG=${{ steps.extract.outputs.candidate_tag }}
           
-          # Checks if the package referenced as candidate_tag actually exists
+          # Checks if the package referenced as candidate_tag (daily) actually exists
           CVMFS_BASE_PATH="/cvmfs/alice.cern.ch/el9-x86_64/Packages/"   
           # replace :: with /
           CAND_TAG="${CAND_TAG//:://}"
           CURR_TAG="${CURR_TAG//:://}"
 
-          echo "${CVMFS_BASE_PATH}/${CURR_TAG}" > compare-tags.txt
-          echo "${CVMFS_BASE_PATH}/${CAND_TAG}" >> compare-tags.txt
+          # Determine the final CVFMS version (including trailing -N) for the current tag
+          CURR_TAG_FINAL=$(ls -d ${CVMFS_BASE_PATH}/${CURR_TAG}* \
+            | sort -t- -k6,6n \
+            | tail -1)
+          echo "CURR TAG PATH IS ${CURR_TAG_FINAL}"
+          # Determine the final CVFMS version (including trailing -N) for the candidate (daily) tag
+          CAND_TAG_FINAL=$(ls -d ${CVMFS_BASE_PATH}/${CAND_TAG}* \
+            | sort -t- -k6,6n \
+            | tail -1)
+          echo "CAND TAG PATH IS ${CAND_TAG_FINAL}"
+
+          echo "${CURR_TAG_FINAL}" > compare-tags.txt
+          echo "${CAND_TAG_FINAL}" >> compare-tags.txt
 
           python3 workflow_scripts/get_release_tags.py compare-tags.txt > tags.json
+          cat tags.json
         shell: bash
 
       - name: Summarize tag changes
