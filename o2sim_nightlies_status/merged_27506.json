@@ -644,8 +644,8 @@
     "Output directory": "/alice/sim/2025/LHC22k4_nightly/311142",
     "Total": 110,
     "Done": "",
-    "Active": 110,
+    "Active": 107,
     "Wait": "",
-    "Err": ""
+    "Err": 3
   }
 ]
