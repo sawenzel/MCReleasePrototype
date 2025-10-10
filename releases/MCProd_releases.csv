@@ -7,3 +7,4 @@
 O2PDPSuite::daily-20250806-0000-1, O2PDPSuite::MC-prod-2025-v9, ""
 O2PDPSuite::daily-20250902-0000-1, O2PDPSuite::MC-prod-2025-v10, ""
 O2PDPSuite::daily-20251001-0000-1, O2PDPSuite::MC-prod-2025-v12, "make version 12 (11 was dummy)"
+O2PDPSuite::daily-20251010-0000-1, O2PDPSuite::MC-prod-2025-v13, "make version 13; important bug fixes"
