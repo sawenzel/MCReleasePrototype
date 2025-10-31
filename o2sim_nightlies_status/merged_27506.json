@@ -687,10 +687,10 @@
     "SoftwarePackage": "O2sim::v20251031-1",
     "Output directory": "/alice/sim/2025/LHC22k4_nightly/311173",
     "Total": 110,
-    "Done": 81,
-    "Active": 4,
+    "Done": 82,
+    "Active": 2,
     "Wait": "",
-    "Err": 25
+    "Err": 26
   },
   {
     "PID": 3447694275,
