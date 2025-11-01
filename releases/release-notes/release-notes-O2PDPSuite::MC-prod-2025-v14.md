@@ -3,24 +3,25 @@
 
 These are release notes for O2PDPSuite::MC-prod-2025-v14 in comparison to the previous tag O2PDPSuite::MC-prod-2025-v13.
 
-The release is based on the daily tag O2PDPSuite::daily-20251031-0000-1.
+The release is based on the daily tag O2PDPSuite::daily-20251101-0000-1.
 
 
 ## Repository Updates
-- **O2**: `daily-20251010-0000` → `daily-20251031-0000`
-- **O2Physics**: `daily-20251010-0000` → `daily-20251031-0000`
+- **O2sim**: `async-20251010.1` → `v20251101`
+- **O2**: `daily-20251010-0000` → `daily-20251101-0000`
 - **gpu-system**: `error` → `cuda_arch@86#89@_12.9.86-rocm_arch@gfx906#gfx908@_6.3.42134-opencl-miopen-migraphx-cudnn-tensorrt`
-- **DDS**: `3.13` → `3.16`
-- **madgraph**: `None` → `v3.5.2`
-- **KFParticle**: `v1.1-6` → `v1.1-7`
-- **O2DPG**: `daily-20251010-0000` → `daily-20251031-0000`
-- **ROOT**: `v6-32-06-alice10` → `v6-36-04-alice2`
-- **ODC**: `0.86.0` → `0.87.0`
-- **Herwig**: `None` → `v7.3.0`
+- **xjalienfs**: `1.6.7` → `1.6.8`
 - **ThePEG**: `v2.3.0-alice1` → `v2.3.0-alice2`
-- **AliGenO2**: `v20251010` → `v20251031`
-- **O2sim**: `async-20251010.1` → `v20251031`
-- **QualityControl**: `v1.183.0` → `daily-20251031-0000`
+- **ROOT**: `v6-32-06-alice10` → `v6-36-04-alice2`
+- **Herwig**: `None` → `v7.3.0`
+- **QualityControl**: `v1.183.0` → `daily-20251101-0000`
+- **ODC**: `0.86.0` → `0.87.0`
+- **AliGenO2**: `v20251010` → `v20251101`
+- **O2Physics**: `daily-20251010-0000` → `daily-20251101-0000`
+- **madgraph**: `None` → `v3.5.2`
+- **DDS**: `3.13` → `3.16`
+- **O2DPG**: `daily-20251010-0000` → `daily-20251101-0000`
+- **KFParticle**: `v1.1-6` → `v1.1-7`
 - **Control-OCCPlugin**: `v1.44.0` → `v1.45.2`
 
 ## MC Relevant Changes
@@ -64,6 +65,8 @@ This is the list of commits in dirs matching: `^CCDB/.*`, `^Common/SimConfig/.*`
 ### O2DPG
 This is the list of commits in dirs matching: `^MC/.*`, `^GRID/.*`, `UTILS/.*`
 
+- d59baadf Fix name of ITS QC tasks
+- 0aa78f8a Update the injector to use rapidity instead of eta (#2099)
 - 0b8c28d4 Herwig7 external generator (#2163)
 - 759c1a13 Update DPL configurations related to analysis QC (#2149)
 - bcbb58a8 Prompt charmonia in OO midrapidity with traigger gap 2 (default was 5) (#2169)
@@ -78,6 +81,7 @@ This is the list of commits in dirs matching: `^MC/.*`, `^GRID/.*`, `UTILS/.*`
 ## Contributors
 - Andrea Sofia Triolo
 - Barthélémy von Haller
+- Bong-Hwi Lim
 - Chuntai
 - Fabrizio
 - Felix Schlepper
