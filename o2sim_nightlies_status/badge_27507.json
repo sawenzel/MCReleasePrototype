@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
   "label": "pp nightly (27507) / O2sim::v20251103-1",
-  "message": "\ud83c\udfc3 running [109/0/1]",
-  "color": "orange"
+  "message": "\u2705 good [110/0/0]",
+  "color": "green"
 }
