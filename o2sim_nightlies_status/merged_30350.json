@@ -1010,5 +1010,16 @@
     "Active": "",
     "Wait": "",
     "Err": 4
+  },
+  {
+    "PID": 3450857852,
+    "Run no.": 544122,
+    "SoftwarePackage": "O2sim::v20251104-1",
+    "Output directory": "/alice/sim/2024/LHC24e7/v20251104-1",
+    "Total": 110,
+    "Done": "",
+    "Active": 103,
+    "Wait": "",
+    "Err": 7
   }
 ]
