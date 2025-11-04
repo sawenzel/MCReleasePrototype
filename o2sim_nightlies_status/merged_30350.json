@@ -1018,8 +1018,8 @@
     "Output directory": "/alice/sim/2024/LHC24e7/v20251104-1",
     "Total": 110,
     "Done": "",
-    "Active": 20,
+    "Active": 11,
     "Wait": "",
-    "Err": 90
+    "Err": 99
   }
 ]
