@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "label": "PbPb nightly (27506) / O2sim::v20251104-1",
-  "message": "\u274c bad [72/38/0]",
-  "color": "red"
+  "label": "PbPb nightly (27506) / O2sim::v20251105-1",
+  "message": "\ud83c\udfc3 running [0/26/84]",
+  "color": "orange"
 }
