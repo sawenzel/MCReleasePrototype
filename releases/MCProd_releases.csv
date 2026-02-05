@@ -9,4 +9,5 @@ O2PDPSuite::daily-20250902-0000-1, O2PDPSuite::MC-prod-2025-v10, ""
 O2PDPSuite::daily-20251001-0000-1, O2PDPSuite::MC-prod-2025-v12, "make version 12 (11 was dummy)"
 O2PDPSuite::daily-20251010-0000-1, O2PDPSuite::MC-prod-2025-v13, "make version 13; important bug fixes"
 O2PDPSuite::daily-20251101-0000-1, O2PDPSuite::MC-prod-2025-v14, "make version 14; important bug fixes (embedding, CCDB_REMAP, QC task naming)"
+O2PDPSuite::daily-20251120-0000-1, O2PDPSuite::MC-prod-2025-v15, "make version 15; ITS geom impr; sync TPC reco step"
 
