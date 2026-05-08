@@ -99,7 +99,7 @@ for repo, repo_data in deltas_transformed.items():
     if os.path.exists(repo):
         shutil.rmtree(repo)
     subprocess.run(
-        ["git", "clone", "--quiet", "--no-single-branch", "--tags", url, repo],
+        ["git", "clone",  "-c", "http.sslVerify=false", "--quiet", "--no-single-branch", "--tags", url, repo],
         check=True
     )
 
