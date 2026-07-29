@@ -58,13 +58,20 @@ rediscover them:
    original code generated them *after* `open_release_pr()` had already
    pushed. Fixed by splitting into `checkout_release_branch()` (first) +
    `commit_and_open_pr(..., extra_paths=[...])` (after notes are written).
-7. **CVMFS publish propagation lag**: immediately after Jenkins reports
-   the release build SUCCESS, the new tag's directory (and `.meta.json`)
-   may not be visible on CVMFS yet — the first release-notes generation
-   attempt right after build #41 succeeded failed with `No such file or
-   directory`. Needs a short retry/delay, not an immediate one-shot
-   attempt (see whether this file's sibling release-notes doc was added in
-   the same PR or a follow-up commit for how this played out).
+7. **Don't diff release notes against the just-built final tag — diff
+   against the daily, same as `workflow_scripts/get_release_notes.sh`
+   already does.** First attempt (right after build #41 succeeded) tried
+   `resolve_final_dir(version)` for the new-tag `.meta.json` and failed
+   with `No such file or directory` — CVMFS hadn't propagated
+   `MC-prod-2026-v11` yet. But that wait was never necessary: the final
+   tag is built FROM the daily (identical package set, just re-tagged), and
+   `get_release_notes.sh`'s own `CAND_TAG=<daily>` / `FINAL_TAG=<release>`
+   split makes this explicit — the daily (already on CVMFS, no propagation
+   delay) is what gets diffed; the final tag is only ever used as a display
+   *label* in the generated text, never as a path that needs to exist.
+   Fixed in `cmd_release`: `new_dir = cvmfs_dir(daily)`, not
+   `resolve_final_dir(version)`. User caught this one directly by pointing
+   at the existing script rather than letting me chase CVMFS propagation.
 
 ## Where to look for more
 
