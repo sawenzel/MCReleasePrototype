@@ -3,36 +3,54 @@
 
 These are release notes for O2PDPSuite::MC-prod-2026-v12 in comparison to the previous tag O2PDPSuite::MC-prod-2026-v11.
 
-The release is based on the daily tag O2PDPSuite::daily-20260917-0000-1.
+The release is based on the daily tag O2PDPSuite::daily-20260917-0000-1, with O2DPG taken from commit
+90c0a3d259b814aeb6f687bcfdea6dec4694e94f (one commit after that daily's O2DPG tag).
 
+## Highlights for MC productions
+
+- **MC truth and labels.** Fixed a stale track-ID mapping between events in the MC stack, an offset applied to invalid track indices when merging sub-events, and a label encoded for signals without an MC particle. `isFromRadDecay` ancestry walk fixed.
+- **Embedding.** Mother indices are now reassigned correctly after pruning HF events, and a segfault after coalescence from HF decays is fixed. The ccbar/bbbar ratio is tunable.
+- **Timeframes without collisions.** Each timeframe gets its own collision-context slot; TPC digitization and the looper generator handle an empty timeframe.
+- **Anchored MC.** `anchorMC` no longer anchors to parts of a run without collisions, uses learned resource estimates, and sizes the QED interaction spec to the QED event pool. `o2dpg_sim_workflow.py` is adapted to the new TPC correction maps. The 2-tag (alternative-reco) setup of `anchorMC.sh` and `anchorMC_DataEmbedding.sh` no longer loses the MC software environment when a module version contains `@` (O2DPG#2463). The anchoring point is shifted past the ITS ramp-up in both of its coordinates, so a job at production offset 0 no longer sits in the ramp where the ITS time-dead map masks every chip (O2DPG 90c0a3d259).
+- **Simulation.** Per-track random seeding now works with Geant4. New TPC 83mKr calibration generator with Geant4 ionisation-fluctuation support. EMCal digitizer fix (EMCAL-1156). ZNC cross-section ratio applied after the pile-up correction.
+- **Geometry.** Field-free media for the L3 magnet and compensator. MFT cooling pipe bends get their material back; TPC inner field cage prepreg strip and sector-17 gas pipe placement fixed; several TOF MANY overlaps removed. TRD and MFT volumes deduplicated; TPC half-space cuts replaced by boxes; ZEM placed in the barrel volume.
+- **CCDB.** The CCDB URL is no longer hardcoded, to support the new CCDB setup (#15779).
+- **Reconstruction.** DCAFitter X-error regularization applied only where needed; faster material LUT.
+- **Generators.** New EPOS4 configurations and several new PWGLF, PWGHF, PWGDQ and jet configurations (see O2DPG list).
+- **Externals.** ROOT `v6-36-10-alice4`, arrow `v25.0.0`, ONNXRuntime `v1.29.0`, protobuf/grpc/abseil updates, VecGeom v2 support; TGeo2VecGeom, OCCT and pythonOCC added.
+
+## Validation
+
+- 2-tag compatibility test: Jenkins O2DPG-2TAG-TESTING #68 — SUCCESS.
+- AO2D RelVal on the pp nightly `LHC22k5_nightly`, done with the preceding daily `daily-20260916-0500-1` (303457, O2sim v20260819-1 vs 303485, O2sim v20260916-1; the 94 common subjobs, AnalysisQC with `daily-20260916-0500-1`, RelVal default thresholds): 832 objects; 145 GOOD, 119 BAD, 568 empty on both sides. The generated collision count is identical (689934). The MC vertex RMS is about 1.7% larger in x, y and z: the generated vertices are identical, but the older software stored MC collisions with a vertex of exactly (0,0,0) in the AO2D (255 of 7287 in subjob 001), which the new software no longer writes. Reconstructed collisions per generated collision rise from 0.502 to 0.519 and propagated tracks by 3.6%, in line with the geometry, material and TPC reconstruction changes of this release.
 
 ## Repository Updates
-- **protobuf**: `v29.3` → `v31.1`
-- **ONNXRuntime**: `v1.22.0` → `v1.29.0`
-- **O2**: `daily-20260729-0000` → `daily-20260917-0000`
-- **onnx**: `v1.17.0-alice2` → `v1.22.0`
 - **alibuild-recipe-tools**: `v0.3.0` → `v0.4.0`
-- **O2DPG**: `daily-20260729-0000` → `daily-20260917-0000`
 - **c-ares**: `1.18.1` → `1.34.6`
 - **Monitoring**: `v3.19.16` → `v3.19.17`
-- **gpu-system**: `cuda_13.1.115_arch@75_virtual@_home_F52XG4RPNRXWGYLMF5RXKZDBBI000000-rocm_6.3.42134_arch@gfx906@_home_F5XXA5BPOJXWG3IK-opencl-miopen-migraphx-cudnn-tensorrt` → `cuda_13.1.115_arch_75_virtual-rocm_6.3.42134_arch_gfx906-opencl-miopen-cudnn-tensorrt`
-- **arrow**: `v20.0.0-alice1` → `v25.0.0-alice`
-- **libxml2**: `v2.9.3` → `v2.15.3`
-- **ROOT**: `v6-36-10-alice2` → `v6-36-10-alice4`
-- **TGeo2VecGeom**: `None` → `v0.1.2`
-- **OCCT**: `None` → `v7.9.3`
-- **O2sim**: `async-20260729.1` → `v20260917`
 - **pythonOCC**: `None` → `v7.9.3`
-- **cudnn_frontend**: `None` → `v1.24.0`
-- **QualityControl**: `v1.194.0` → `daily-20260917-0000`
-- **JAliEn-ROOT**: `0.7.21` → `0.7.22`
-- **cutlass**: `None` → `v4.4.2`
-- **O2Physics**: `daily-20260729-0000` → `daily-20260917-0000`
-- **abseil**: `20240722.0` → `20250814.0-alice1`
-- **xsimd**: `14.0.0` → `14.2.0`
-- **AliGenO2**: `v20260729` → `v20260917`
-- **FreeType**: `v2.10.1` → `v2.13.3`
 - **grpc**: `v1.71.0` → `v1.74.0`
+- **OCCT**: `None` → `v7.9.3`
+- **AliGenO2**: `v20260729` → `v20260917`
+- **O2sim**: `async-20260729.1` → `v20260917`
+- **ONNXRuntime**: `v1.22.0` → `v1.29.0`
+- **onnx**: `v1.17.0-alice2` → `v1.22.0`
+- **JAliEn-ROOT**: `0.7.21` → `0.7.22`
+- **O2**: `daily-20260729-0000` → `daily-20260917-0000`
+- **QualityControl**: `v1.194.0` → `daily-20260917-0000`
+- **xsimd**: `14.0.0` → `14.2.0`
+- **O2DPG**: `daily-20260729-0000` → `90c0a3d259` (master, one commit after `daily-20260917-0000`)
+- **arrow**: `v20.0.0-alice1` → `v25.0.0-alice`
+- **TGeo2VecGeom**: `None` → `v0.1.2`
+- **FreeType**: `v2.10.1` → `v2.13.3`
+- **protobuf**: `v29.3` → `v31.1`
+- **cudnn_frontend**: `None` → `v1.24.0`
+- **ROOT**: `v6-36-10-alice2` → `v6-36-10-alice4`
+- **cutlass**: `None` → `v4.4.2`
+- **abseil**: `20240722.0` → `20250814.0-alice1`
+- **libxml2**: `v2.9.3` → `v2.15.3`
+- **gpu-system**: `cuda_13.1.115_arch@75_virtual@_home_F52XG4RPNRXWGYLMF5RXKZDBBI000000-rocm_6.3.42134_arch@gfx906@_home_F5XXA5BPOJXWG3IK-opencl-miopen-migraphx-cudnn-tensorrt` → `cuda_13.1.115_arch_75_virtual-rocm_6.3.42134_arch_gfx906-opencl-miopen-cudnn-tensorrt`
+- **O2Physics**: `daily-20260729-0000` → `daily-20260917-0000`
 
 ## MC Relevant Changes
 
