@@ -21,7 +21,8 @@ The release is based on the daily tag O2PDPSuite::daily-20260917-0000-1, with O2
 
 ## Validation
 
-- 2-tag compatibility test: Jenkins O2DPG-2TAG-TESTING #68 — SUCCESS.
+- 2-tag compatibility test on the daily tag: Jenkins O2DPG-2TAG-TESTING #68 — SUCCESS.
+- 2-tag compatibility test on the released tag `O2PDPSuite::MC-prod-2026-v12-1`: Jenkins O2DPG-2TAG-TESTING #71 — SUCCESS (#69 and #70 each failed on one case, #69 on case 8 and #70 on case 11, in both runs from GRID jobs killed by the idle-CPU watchdog at CNAF, HIP and CNAF; every case passed in at least one run).
 - AO2D RelVal on the pp nightly `LHC22k5_nightly`, done with the preceding daily `daily-20260916-0500-1` (303457, O2sim v20260819-1 vs 303485, O2sim v20260916-1; the 94 common subjobs, AnalysisQC with `daily-20260916-0500-1`, RelVal default thresholds): 832 objects; 145 GOOD, 119 BAD, 568 empty on both sides. The generated collision count is identical (689934). The MC vertex RMS is about 1.7% larger in x, y and z: the generated vertices are identical, but the older software stored MC collisions with a vertex of exactly (0,0,0) in the AO2D (255 of 7287 in subjob 001), which the new software no longer writes. Reconstructed collisions per generated collision rise from 0.502 to 0.519 and propagated tracks by 3.6%, in line with the geometry, material and TPC reconstruction changes of this release.
 
 ## Repository Updates
