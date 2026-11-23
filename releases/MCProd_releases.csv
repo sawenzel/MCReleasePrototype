@@ -14,3 +14,5 @@ O2PDPSuite::daily-20260729-0000-1, O2PDPSuite::MC-prod-2026-v11, "MC-prod-2026-v
 O2PDPSuite::daily-20260917-0000-1, O2PDPSuite::MC-prod-2026-v12, "release MC-prod-2026-v12 from daily-20260917-0000-1 (tag overrides: O2DPG=90c0a3d259b814aeb6f687bcfdea6dec4694e94f)"
 O2PDPSuite::daily-20260929-0000-1, O2PDPSuite::MC-prod-2026-v13, "release MC-prod-2026-v13 from daily-20260929-0000-1"
 O2PDPSuite::daily-20261102-0000-1, O2PDPSuite::MC-prod-2026-v14, "release MC-prod-2026-v14 from daily-20261102-0000-1"
+O2PDPSuite::daily-20261122-0000-1, O2PDPSuite::MC-prod-2026-v15, "release MC-prod-2026-v15 from daily-20261122-0000-1"
+O2PDPSuite::daily-20261122-0000-1, O2PDPSuite::MC-prod-2026-v16, "duplicate of MC-prod-2026-v15 (same daily-20261122-0000-1), published by mistake, do not use"
